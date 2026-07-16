@@ -1,12 +1,14 @@
 {
+  "id": "./",
   "name": "DrDer Puzzle 1",
   "short_name": "DrDer Puzzle",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
+  "display_override": ["standalone", "fullscreen"],
   "background_color": "#0f0a1e",
   "theme_color": "#7c3aed",
-  "description": "لعبة ألغاز منزلقة كلاسيكية بتصميم عصري - DrDer Puzzle 1",
+  "description": "لعبة ألغاز منزلقة كلاسيكية بتصميم عصري",
   "icons": [
     {
       "src": "./icons/icon-192.png",
@@ -24,6 +26,6 @@
   "lang": "ar",
   "dir": "rtl",
   "categories": ["games", "puzzle"],
-  "orientation": "portrait",
+  "orientation": "any",
   "prefer_related_applications": false
 }
