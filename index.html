@@ -256,8 +256,8 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(10, 5, 20, 0.92);
-      backdrop-filter: blur(8px);
+      background: rgba(10, 5, 20, 0.95);
+      backdrop-filter: blur(10px);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -451,14 +451,28 @@
 
 <script>
   (function() {
-    // تسجيل Service Worker
+    // ========== Service Worker ==========
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('Service Worker registered:', reg.scope))
-        .catch(err => console.log('Service Worker registration failed:', err));
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => {
+            console.log('✅ Service Worker registered:', reg.scope);
+            
+            // فحص التحديثات
+            reg.addEventListener('updatefound', () => {
+              const newWorker = reg.installing;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  console.log('🔄 تحديث جديد متاح - سيتم تفعيله عند إعادة التحميل');
+                }
+              });
+            });
+          })
+          .catch(err => console.error('❌ Service Worker failed:', err));
+      });
     }
 
-    // عناصر DOM
+    // ========== عناصر DOM ==========
     const screens = {
       main: document.getElementById('mainMenu'),
       game: document.getElementById('gameScreen'),
@@ -487,7 +501,7 @@
     const deleteScoresBtn = document.getElementById('deleteScoresBtn');
     const scoresList = document.getElementById('scoresList');
 
-    // حالة اللعبة
+    // ========== حالة اللعبة ==========
     let currentScreen = 'main';
     let gridSize = 4;
     let tiles = [];
@@ -500,12 +514,10 @@
     let movesCounterEnabled = true;
     let moveHistory = [];
 
-    // حالة التثبيت
+    // ========== حالة التثبيت ==========
     let deferredPrompt = null;
-    let installOverlay = null;
-    let autoHideTimeout = null;
 
-    // ---------- دوال التثبيت ----------
+    // ========== دوال التثبيت ==========
     function detectPlatform() {
       const ua = navigator.userAgent || navigator.vendor || window.opera;
       if (/android/i.test(ua)) return 'android';
@@ -524,17 +536,23 @@
       } else if (platform === 'ios') {
         return `
           <div class="platform-title">📱 آيفون (Safari):</div>
-          <div>١. اضغط على زر المشاركة <span style="font-size:1.2rem;">📤</span></div>
+          <div>١. اضغط على زر المشاركة 📤</div>
           <div>٢. اختر "Add to Home Screen"</div>
         `;
       }
       return `
         <div class="platform-title">💻 سطح المكتب:</div>
-        <div>استخدم Chrome أو Edge واضغط على أيقونة التثبيت في شريط العنوان</div>
+        <div>استخدم Chrome أو Edge واضغط على أيقونة التثبيت ⬇️ في شريط العنوان</div>
       `;
     }
 
-    function canShowInstallOverlay() {
+    function shouldShowInstallPrompt() {
+      // لا تظهر إذا كان التطبيق مثبتاً بالفعل
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        return false;
+      }
+      
+      // فحص localStorage
       const dismissed = localStorage.getItem('drder_install_dismissed');
       if (!dismissed) return true;
       
@@ -546,17 +564,25 @@
     }
 
     function showInstallOverlay() {
-      if (installOverlay) return;
-      if (window.matchMedia('(display-mode: standalone)').matches) return;
-      if (!canShowInstallOverlay()) return;
+      // إزالة أي نافذة موجودة
+      const existingOverlay = document.getElementById('installOverlay');
+      if (existingOverlay) {
+        existingOverlay.remove();
+      }
 
+      if (!shouldShowInstallPrompt()) {
+        console.log('⏭️ تخطي رسالة التثبيت (مثبت بالفعل أو تم تجاهلها مؤخراً)');
+        return;
+      }
+
+      console.log('📲 عرض رسالة التثبيت');
       const hasPrompt = !!deferredPrompt;
       const instructions = getInstallInstructions();
 
-      installOverlay = document.createElement('div');
-      installOverlay.className = 'install-overlay';
-      installOverlay.id = 'installOverlay';
-      installOverlay.innerHTML = `
+      const overlay = document.createElement('div');
+      overlay.className = 'install-overlay';
+      overlay.id = 'installOverlay';
+      overlay.innerHTML = `
         <div class="install-dialog">
           <div class="app-icon"></div>
           <h3>تثبيت DrDer Puzzle 1</h3>
@@ -574,60 +600,78 @@
           </div>
         </div>
       `;
-      document.body.appendChild(installOverlay);
+      document.body.appendChild(overlay);
 
+      // زر التثبيت المباشر
       if (hasPrompt) {
         document.getElementById('installNowBtn').addEventListener('click', async () => {
-          deferredPrompt.prompt();
-          const { outcome } = await deferredPrompt.userChoice;
-          deferredPrompt = null;
-          removeInstallOverlay();
+          console.log('🔘 ضغط زر التثبيت');
+          try {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`📋 نتيجة التثبيت: ${outcome}`);
+            deferredPrompt = null;
+          } catch (err) {
+            console.error('❌ فشل التثبيت:', err);
+          }
+          overlay.remove();
           localStorage.setItem('drder_install_dismissed', Date.now().toString());
         });
       }
 
+      // زر لاحقاً
       document.getElementById('installLaterBtn').addEventListener('click', () => {
-        removeInstallOverlay();
+        console.log('⏭️ ضغط زر لاحقاً');
+        overlay.remove();
         localStorage.setItem('drder_install_dismissed', Date.now().toString());
       });
 
-      autoHideTimeout = setTimeout(() => {
-        removeInstallOverlay();
-      }, 15000);
+      // إغلاق تلقائي بعد 30 ثانية
+      setTimeout(() => {
+        if (document.getElementById('installOverlay')) {
+          console.log('⏰ إغلاق تلقائي لرسالة التثبيت');
+          overlay.remove();
+        }
+      }, 30000);
     }
 
-    function removeInstallOverlay() {
-      if (autoHideTimeout) {
-        clearTimeout(autoHideTimeout);
-        autoHideTimeout = null;
-      }
-      if (installOverlay) {
-        installOverlay.classList.add('hidden');
-        setTimeout(() => {
-          if (installOverlay) {
-            installOverlay.remove();
-            installOverlay = null;
-          }
-        }, 300);
-      }
-    }
-
-    // أحداث التثبيت
+    // ========== حدث beforeinstallprompt ==========
     window.addEventListener('beforeinstallprompt', (e) => {
+      console.log('🎯 تلقى حدث beforeinstallprompt');
       e.preventDefault();
       deferredPrompt = e;
-      if (currentScreen === 'main') {
-        setTimeout(() => showInstallOverlay(), 1500);
-      }
+      
+      // عرض النافذة بعد ثانيتين من التحميل
+      setTimeout(() => {
+        if (currentScreen === 'main') {
+          showInstallOverlay();
+        }
+      }, 2000);
     });
 
+    // ========== حدث التثبيت الناجح ==========
     window.addEventListener('appinstalled', () => {
+      console.log('✅ تم تثبيت التطبيق بنجاح');
       deferredPrompt = null;
-      removeInstallOverlay();
+      const overlay = document.getElementById('installOverlay');
+      if (overlay) overlay.remove();
       localStorage.setItem('drder_install_dismissed', Date.now().toString());
     });
 
-    // ---------- دوال الشاشات ----------
+    // ========== عرض النافذة للمتصفحات التي لا تدعم beforeinstallprompt ==========
+    window.addEventListener('load', () => {
+      console.log('📄 تم تحميل الصفحة');
+      
+      setTimeout(() => {
+        // إذا لم يكن هناك beforeinstallprompt خلال 3 ثواني
+        if (!deferredPrompt) {
+          console.log('⚠️ لم يتم استلام beforeinstallprompt - عرض التعليمات اليدوية');
+          showInstallOverlay();
+        }
+      }, 3000);
+    });
+
+    // ========== دوال الشاشات ==========
     function switchScreen(screenId) {
       Object.values(screens).forEach(s => s.classList.add('hidden'));
       screens[screenId].classList.remove('hidden');
@@ -635,7 +679,7 @@
       if (screenId === 'main') updateResumeButtonVisibility();
     }
 
-    // ---------- دوال الوقت والعداد ----------
+    // ========== دوال الوقت والعداد ==========
     function formatTime(sec) {
       const m = Math.floor(sec / 60).toString().padStart(2, '0');
       const s = (sec % 60).toString().padStart(2, '0');
@@ -663,7 +707,7 @@
       movesDisplay.textContent = movesCounterEnabled ? moves : '--';
     }
 
-    // ---------- خوارزمية اللغز ----------
+    // ========== خوارزمية اللغز ==========
     function countInversions(arr) {
       let inv = 0;
       for (let i = 0; i < arr.length; i++) {
@@ -701,7 +745,7 @@
       return arr;
     }
 
-    // ---------- عرض اللوحة ----------
+    // ========== عرض اللوحة ==========
     function renderBoard() {
       puzzleBoard.innerHTML = '';
       const size = gridSize;
@@ -722,7 +766,7 @@
       });
     }
 
-    // ---------- الحركة والتراجع ----------
+    // ========== الحركة والتراجع ==========
     function getAdjacentIndices(index) {
       const size = gridSize;
       const row = Math.floor(index / size);
@@ -810,7 +854,7 @@
       alert(`🎉 تم حل اللغز!\nالحركات: ${moves}\nالوقت: ${formatTime(timerSeconds)}`);
     }
 
-    // ---------- إدارة اللعبة ----------
+    // ========== إدارة اللعبة ==========
     function startNewGame(size = gridSize) {
       stopTimer();
       gridSize = size;
@@ -873,7 +917,7 @@
       resumeBtn.style.display = saved ? 'block' : 'none';
     }
 
-    // ---------- أفضل النتائج ----------
+    // ========== أفضل النتائج ==========
     function saveBestScore() {
       const key = `drder_best_${gridSize}`;
       const prev = JSON.parse(localStorage.getItem(key)) || { moves: Infinity, time: Infinity, wins: 0 };
@@ -897,7 +941,7 @@
       scoresList.innerHTML = html || 'لا توجد نتائج بعد.';
     }
 
-    // ---------- الأحداث ----------
+    // ========== الأحداث ==========
     startBtn.addEventListener('click', () => {
       const activeLevel = document.querySelector('.level-btn.active');
       const size = activeLevel ? parseInt(activeLevel.dataset.size) : 4;
@@ -996,17 +1040,8 @@
       }
     });
 
-    // التحميل الأولي
+    // ========== التحميل الأولي ==========
     updateResumeButtonVisibility();
-
-    // عرض رسالة التثبيت عند التحميل
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        if (!window.matchMedia('(display-mode: standalone)').matches && canShowInstallOverlay()) {
-          showInstallOverlay();
-        }
-      }, 2000);
-    });
   })();
 </script>
 </body>
