@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>DrDer Puzzle 1</title>
   
-  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22DrDer%20Puzzle%201%22%2C%22short_name%22%3A%22DrDer%20Puzzle%201%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f0a1e%22%2C%22theme_color%22%3A%22%237c3aed%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fi.ibb.co%2FYTXbwNT2%2F192-1.png%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%2C%7B%22src%22%3A%22https%3A%2F%2Fi.ibb.co%2FwhGd4Z8p%2F512-1.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
+  <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#7c3aed">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -119,6 +119,21 @@
       border-color: #4b3b6b;
     }
 
+    button.hint-btn {
+      background: #f59e0b;
+      box-shadow: 0 4px 0 #b45309;
+    }
+
+    button.undo-btn {
+      background: #6366f1;
+      box-shadow: 0 4px 0 #4338ca;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
     .level-selector {
       display: flex;
       gap: 0.5rem;
@@ -163,17 +178,29 @@
       font-weight: 700;
       color: white;
       box-shadow: 0 6px 0 #4c1d95;
-      transition: transform 0.1s ease, background 0.2s;
+      transition: transform 0.1s ease, background 0.2s, box-shadow 0.2s;
       cursor: pointer;
       font-size: clamp(1rem, 5vw, 2rem);
       aspect-ratio: 1 / 1;
       -webkit-tap-highlight-color: transparent;
+      position: relative;
+    }
+
+    .tile.hint-highlight {
+      animation: hintGlow 0.8s ease-in-out 3;
+      box-shadow: 0 0 20px #f59e0b, 0 6px 0 #b45309;
+      background: #f59e0b;
     }
 
     .tile.empty {
       background: transparent;
       box-shadow: none;
       pointer-events: none;
+    }
+
+    @keyframes hintGlow {
+      0%, 100% { box-shadow: 0 0 20px #f59e0b, 0 6px 0 #b45309; }
+      50% { box-shadow: 0 0 35px #fbbf24, 0 6px 0 #b45309; }
     }
 
     .stats {
@@ -187,8 +214,14 @@
 
     .game-actions {
       display: flex;
-      gap: 0.7rem;
+      gap: 0.5rem;
       justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .game-actions button {
+      font-size: 0.9rem;
+      padding: 0.7rem 1rem;
     }
 
     .settings-row {
@@ -323,6 +356,10 @@
       .game-container {
         padding: 1rem 0.8rem;
       }
+      .game-actions button {
+        font-size: 0.8rem;
+        padding: 0.6rem 0.8rem;
+      }
     }
   </style>
 </head>
@@ -362,6 +399,8 @@
     </div>
     <div class="puzzle-board" id="puzzleBoard"></div>
     <div class="game-actions">
+      <button id="hintBtn" class="hint-btn">💡 تلميح</button>
+      <button id="undoBtn" class="undo-btn">↩ تراجع</button>
       <button id="newGameBtn">🔄 لعبة جديدة</button>
     </div>
   </div>
@@ -392,6 +431,8 @@
     <p>الهدف: ترتيب الأرقام من ١ إلى آخر رقم ، والمساحة الفارغة في النهاية.</p>
     <p>المستويات المتاحة: 3×3 (سهل) ، 4×4 (متوسط) ، 5×5 (صعب) ، 6×6 (خبير) ، 7×7 (مستحيل).</p>
     <p>يمكنك التحريك باللمس أو السحب أو أسهم لوحة المفاتيح.</p>
+    <p>💡 زر التلميح: يظهر لك أفضل حركة ممكنة.</p>
+    <p>↩ زر التراجع: يعيد آخر حركة قمت بها.</p>
     <button id="backFromHowToPlayBtn">رجوع</button>
   </div>
 
@@ -407,8 +448,9 @@
 <script>
   (function() {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('data:application/javascript,self.addEventListener("fetch",e=>{})')
-        .catch(() => {});
+      navigator.serviceWorker.register('sw.js')
+        .then(() => console.log('Service Worker registered'))
+        .catch(err => console.log('Service Worker registration failed:', err));
     }
 
     const screens = {
@@ -429,6 +471,8 @@
     const aboutBtn = document.getElementById('aboutBtn');
     const backToMenuBtn = document.getElementById('backToMenuBtn');
     const newGameBtn = document.getElementById('newGameBtn');
+    const hintBtn = document.getElementById('hintBtn');
+    const undoBtn = document.getElementById('undoBtn');
     const puzzleBoard = document.getElementById('puzzleBoard');
     const timerDisplay = document.getElementById('timerDisplay');
     const movesDisplay = document.getElementById('movesDisplay');
@@ -448,6 +492,8 @@
     let gameActive = false;
     let timerEnabled = true;
     let movesCounterEnabled = true;
+    let moveHistory = [];
+    let hintTimeout = null;
 
     let deferredPrompt = null;
     let installOverlay = null;
@@ -560,12 +606,12 @@
       return inv;
     }
 
-    function isSolvable(tileArray, size) {
+    function isSolvable(tileArray, size, emptyIdx) {
       const inv = countInversions(tileArray);
       if (size % 2 === 1) {
         return inv % 2 === 0;
       } else {
-        const emptyRow = Math.floor(emptyIndex / size);
+        const emptyRow = Math.floor(emptyIdx / size);
         const rowFromBottom = size - emptyRow;
         return (inv % 2 === 0) === (rowFromBottom % 2 === 1);
       }
@@ -575,13 +621,15 @@
       const total = size * size;
       const arr = Array.from({ length: total - 1 }, (_, i) => i + 1);
       arr.push(0);
+      let emptyIdx;
       do {
         for (let i = arr.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [arr[i], arr[j]] = [arr[j], arr[i]];
         }
-        emptyIndex = arr.indexOf(0);
-      } while (!isSolvable(arr, size));
+        emptyIdx = arr.indexOf(0);
+      } while (!isSolvable(arr, size, emptyIdx));
+      emptyIndex = emptyIdx;
       return arr;
     }
 
@@ -593,6 +641,7 @@
       tiles.forEach((value, index) => {
         const tileDiv = document.createElement('div');
         tileDiv.className = 'tile' + (value === 0 ? ' empty' : '');
+        tileDiv.dataset.index = index;
         if (value !== 0) {
           tileDiv.textContent = value;
           tileDiv.addEventListener('click', () => handleTileClick(index));
@@ -617,10 +666,24 @@
       return adj;
     }
 
-    function moveTile(tileIndex) {
-      if (!gameActive) return;
+    function getMovableTiles() {
+      return getAdjacentIndices(emptyIndex).filter(idx => tiles[idx] !== 0);
+    }
+
+    function moveTile(tileIndex, recordHistory = true) {
+      if (!gameActive) return false;
       const adj = getAdjacentIndices(emptyIndex);
-      if (!adj.includes(tileIndex)) return;
+      if (!adj.includes(tileIndex)) return false;
+
+      if (recordHistory) {
+        moveHistory.push({
+          tileIndex: tileIndex,
+          emptyIndex: emptyIndex,
+          moves: moves,
+          timerSeconds: timerSeconds,
+          tiles: [...tiles]
+        });
+      }
 
       [tiles[emptyIndex], tiles[tileIndex]] = [tiles[tileIndex], tiles[emptyIndex]];
       emptyIndex = tileIndex;
@@ -628,14 +691,17 @@
       updateMovesDisplay();
       renderBoard();
       saveGameState();
+      updateUndoButton();
 
       if (checkWin()) {
         handleWin();
       }
+      return true;
     }
 
     function handleTileClick(index) {
       if (tiles[index] === 0) return;
+      clearHintHighlight();
       moveTile(index);
     }
 
@@ -650,17 +716,114 @@
     function handleWin() {
       gameActive = false;
       stopTimer();
+      moveHistory = [];
+      updateUndoButton();
       saveBestScore();
       clearSavedGame();
       alert(`🎉 تم حل اللغز!\nالحركات: ${moves}\nالوقت: ${formatTime(timerSeconds)}`);
     }
 
+    function undoMove() {
+      if (!gameActive) return;
+      if (moveHistory.length === 0) return;
+      
+      clearHintHighlight();
+      const lastMove = moveHistory.pop();
+      tiles = [...lastMove.tiles];
+      emptyIndex = lastMove.emptyIndex;
+      moves = lastMove.moves;
+      timerSeconds = lastMove.timerSeconds;
+      
+      updateMovesDisplay();
+      timerDisplay.textContent = formatTime(timerSeconds);
+      renderBoard();
+      saveGameState();
+      updateUndoButton();
+    }
+
+    function updateUndoButton() {
+      if (undoBtn) {
+        undoBtn.disabled = !gameActive || moveHistory.length === 0;
+      }
+    }
+
+    function clearHintHighlight() {
+      if (hintTimeout) {
+        clearTimeout(hintTimeout);
+        hintTimeout = null;
+      }
+      document.querySelectorAll('.tile.hint-highlight').forEach(t => {
+        t.classList.remove('hint-highlight');
+      });
+    }
+
+    function calculateManhattanDistance(tilesArr, size) {
+      let distance = 0;
+      for (let i = 0; i < tilesArr.length; i++) {
+        const value = tilesArr[i];
+        if (value === 0) continue;
+        const targetIndex = value - 1;
+        const currentRow = Math.floor(i / size);
+        const currentCol = i % size;
+        const targetRow = Math.floor(targetIndex / size);
+        const targetCol = targetIndex % size;
+        distance += Math.abs(currentRow - targetRow) + Math.abs(currentCol - targetCol);
+      }
+      return distance;
+    }
+
+    function getHintMove() {
+      if (!gameActive) return null;
+      const movableTiles = getMovableTiles();
+      if (movableTiles.length === 0) return null;
+
+      let bestTile = null;
+      let bestScore = Infinity;
+
+      for (const tileIndex of movableTiles) {
+        const newTiles = [...tiles];
+        [newTiles[emptyIndex], newTiles[tileIndex]] = [newTiles[tileIndex], newTiles[emptyIndex]];
+        const newEmptyIndex = tileIndex;
+        
+        const distance = calculateManhattanDistance(newTiles, gridSize);
+        
+        if (distance < bestScore) {
+          bestScore = distance;
+          bestTile = tileIndex;
+        }
+      }
+
+      return bestTile;
+    }
+
+    function showHint() {
+      if (!gameActive) return;
+      
+      clearHintHighlight();
+      const hintTile = getHintMove();
+      
+      if (hintTile === null) return;
+      
+      const tileElements = puzzleBoard.querySelectorAll('.tile');
+      tileElements.forEach(el => {
+        if (parseInt(el.dataset.index) === hintTile) {
+          el.classList.add('hint-highlight');
+        }
+      });
+
+      hintTimeout = setTimeout(() => {
+        clearHintHighlight();
+      }, 2500);
+    }
+
     function startNewGame(size = gridSize) {
       stopTimer();
+      clearHintHighlight();
       gridSize = size;
       tiles = generateSolvablePuzzle(size);
       moves = 0;
       timerSeconds = 0;
+      moveHistory = [];
       gameActive = true;
       updateMovesDisplay();
       timerDisplay.textContent = formatTime(0);
@@ -669,6 +832,7 @@
       switchScreen('game');
       startTimer();
       saveGameState();
+      updateUndoButton();
     }
 
     function resumeGame() {
@@ -679,6 +843,7 @@
       emptyIndex = saved.emptyIndex;
       moves = saved.moves;
       timerSeconds = saved.timerSeconds;
+      moveHistory = saved.moveHistory || [];
       gameActive = true;
       updateMovesDisplay();
       timerDisplay.textContent = formatTime(timerSeconds);
@@ -686,6 +851,7 @@
       renderBoard();
       switchScreen('game');
       startTimer();
+      updateUndoButton();
       return true;
     }
 
@@ -697,6 +863,7 @@
         emptyIndex,
         moves,
         timerSeconds,
+        moveHistory,
       };
       localStorage.setItem('drder_puzzle_save', JSON.stringify(state));
       updateResumeButtonVisibility();
@@ -764,11 +931,20 @@
     backToMenuBtn.addEventListener('click', () => {
       stopTimer();
       gameActive = false;
+      clearHintHighlight();
       switchScreen('main');
     });
 
     newGameBtn.addEventListener('click', () => {
       startNewGame(gridSize);
+    });
+
+    hintBtn.addEventListener('click', () => {
+      showHint();
+    });
+
+    undoBtn.addEventListener('click', () => {
+      undoMove();
     });
 
     timerToggle.addEventListener('click', function() {
@@ -799,6 +975,19 @@
     window.addEventListener('keydown', (e) => {
       if (currentScreen !== 'game' || !gameActive) return;
       const key = e.key;
+      
+      if (key === 'z' && e.ctrlKey) {
+        e.preventDefault();
+        undoMove();
+        return;
+      }
+      
+      if (key === 'h' && e.ctrlKey) {
+        e.preventDefault();
+        showHint();
+        return;
+      }
+      
       e.preventDefault();
       const size = gridSize;
       let target = emptyIndex;
@@ -814,6 +1003,7 @@
         const emptyCol = emptyIndex % size;
         const targetCol = target % size;
         if (Math.abs(emptyRow - targetRow) + Math.abs(emptyCol - targetCol) === 1) {
+          clearHintHighlight();
           moveTile(target);
         }
       }
