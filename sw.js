@@ -7,28 +7,23 @@ const ASSETS_TO_CACHE = [
   './icons/512.png'
 ];
 
-// التثبيت
 self.addEventListener('install', (event) => {
-  console.log('Service Worker: Installing...');
+  console.log('🔧 Service Worker: تثبيت...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Service Worker: Caching assets');
+        console.log('📦 Service Worker: تخزين الملفات');
         return cache.addAll(ASSETS_TO_CACHE);
       })
       .then(() => {
-        console.log('Service Worker: Skip waiting');
+        console.log('⏭️ Service Worker: skipWaiting');
         return self.skipWaiting();
-      })
-      .catch((error) => {
-        console.error('Service Worker: Cache failed', error);
       })
   );
 });
 
-// التفعيل وحذف الكاشات القديمة
 self.addEventListener('activate', (event) => {
-  console.log('Service Worker: Activating...');
+  console.log('🚀 Service Worker: تفعيل...');
   event.waitUntil(
     caches.keys()
       .then((cacheNames) => {
@@ -36,21 +31,19 @@ self.addEventListener('activate', (event) => {
           cacheNames
             .filter((name) => name !== CACHE_NAME)
             .map((name) => {
-              console.log('Service Worker: Deleting old cache:', name);
+              console.log('🗑️ Service Worker: حذف كاش قديم:', name);
               return caches.delete(name);
             })
         );
       })
       .then(() => {
-        console.log('Service Worker: Claiming clients');
+        console.log('📢 Service Worker: claim');
         return self.clients.claim();
       })
   );
 });
 
-// استراتيجية Cache First مع Fallback للشبكة
 self.addEventListener('fetch', (event) => {
-  // تجاهل الطلبات غير GET
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
@@ -62,7 +55,6 @@ self.addEventListener('fetch', (event) => {
 
         return fetch(event.request)
           .then((response) => {
-            // لا تخزن إلا الردود الصالحة
             if (!response || response.status !== 200 || response.type !== 'basic') {
               return response;
             }
@@ -71,16 +63,11 @@ self.addEventListener('fetch', (event) => {
             caches.open(CACHE_NAME)
               .then((cache) => {
                 cache.put(event.request, responseToCache);
-              })
-              .catch((err) => {
-                console.warn('Service Worker: Failed to cache:', event.request.url, err);
               });
 
             return response;
           })
-          .catch((error) => {
-            console.warn('Service Worker: Fetch failed, returning offline page', error);
-            // يمكن إرجاع صفحة offline مخصصة هنا
+          .catch(() => {
             return new Response('أنت غير متصل بالإنترنت. يرجى التحقق من اتصالك.', {
               status: 503,
               statusText: 'Service Unavailable',
@@ -89,11 +76,4 @@ self.addEventListener('fetch', (event) => {
           });
       })
   );
-});
-
-// رسالة للتحديث
-self.addEventListener('message', (event) => {
-  if (event.data === 'skipWaiting') {
-    self.skipWaiting();
-  }
 });
