@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>DrDer Puzzle 1</title>
   
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#7c3aed">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="DrDer Puzzle 1">
-  <link rel="apple-touch-icon" href="https://i.ibb.co/YTXbwNT2/192-1.png">
-  <link rel="icon" sizes="192x192" href="https://i.ibb.co/YTXbwNT2/192-1.png">
-  <link rel="icon" sizes="512x512" href="https://i.ibb.co/whGd4Z8p/512-1.png">
+  <link rel="apple-touch-icon" href="./icons/192.png">
+  <link rel="icon" sizes="192x192" href="./icons/192.png">
+  <link rel="icon" sizes="512x512" href="./icons/512.png">
 
   <style>
     * {
@@ -119,11 +119,6 @@
       border-color: #4b3b6b;
     }
 
-    button.hint-btn {
-      background: #f59e0b;
-      box-shadow: 0 4px 0 #b45309;
-    }
-
     button.undo-btn {
       background: #6366f1;
       box-shadow: 0 4px 0 #4338ca;
@@ -178,29 +173,17 @@
       font-weight: 700;
       color: white;
       box-shadow: 0 6px 0 #4c1d95;
-      transition: transform 0.1s ease, background 0.2s, box-shadow 0.2s;
+      transition: transform 0.1s ease, background 0.2s;
       cursor: pointer;
       font-size: clamp(1rem, 5vw, 2rem);
       aspect-ratio: 1 / 1;
       -webkit-tap-highlight-color: transparent;
-      position: relative;
-    }
-
-    .tile.hint-highlight {
-      animation: hintGlow 0.8s ease-in-out 3;
-      box-shadow: 0 0 20px #f59e0b, 0 6px 0 #b45309;
-      background: #f59e0b;
     }
 
     .tile.empty {
       background: transparent;
       box-shadow: none;
       pointer-events: none;
-    }
-
-    @keyframes hintGlow {
-      0%, 100% { box-shadow: 0 0 20px #f59e0b, 0 6px 0 #b45309; }
-      50% { box-shadow: 0 0 35px #fbbf24, 0 6px 0 #b45309; }
     }
 
     .stats {
@@ -266,6 +249,7 @@
       margin: 0.5rem 0;
     }
 
+    /* نافذة التثبيت */
     .install-overlay {
       position: fixed;
       top: 0;
@@ -287,7 +271,7 @@
       border-radius: 2rem;
       padding: 2rem;
       text-align: center;
-      max-width: 340px;
+      max-width: 380px;
       width: 90%;
       box-shadow: 0 20px 50px rgba(124, 58, 237, 0.5);
       animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -298,7 +282,7 @@
       height: 80px;
       border-radius: 20px;
       margin: 0 auto 1rem;
-      background: url('https://i.ibb.co/YTXbwNT2/192-1.png') center/cover;
+      background: url('./icons/192.png') center/cover;
       box-shadow: 0 8px 25px rgba(124, 58, 237, 0.6);
     }
 
@@ -310,9 +294,25 @@
 
     .install-dialog p {
       color: #c4b5fd;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
       font-size: 0.95rem;
       line-height: 1.5;
+    }
+
+    .install-dialog .manual-steps {
+      background: #2d2145;
+      border-radius: 1rem;
+      padding: 1rem;
+      margin: 1rem 0;
+      text-align: right;
+      font-size: 0.9rem;
+      line-height: 1.8;
+    }
+
+    .install-dialog .manual-steps .platform-title {
+      font-weight: bold;
+      color: #c084fc;
+      margin-bottom: 0.3rem;
     }
 
     .install-dialog .install-actions {
@@ -365,6 +365,7 @@
 </head>
 <body>
 <div class="game-container" id="app">
+  <!-- القائمة الرئيسية -->
   <div id="mainMenu" class="screen">
     <div class="header">
       <span class="logo">🧩</span>
@@ -387,6 +388,7 @@
     </div>
   </div>
 
+  <!-- شاشة اللعب -->
   <div id="gameScreen" class="screen hidden">
     <div class="header" style="justify-content: space-between;">
       <button id="backToMenuBtn" class="secondary" style="padding:0.5rem 1rem;">↩ رجوع</button>
@@ -399,12 +401,12 @@
     </div>
     <div class="puzzle-board" id="puzzleBoard"></div>
     <div class="game-actions">
-      <button id="hintBtn" class="hint-btn">💡 تلميح</button>
-      <button id="undoBtn" class="undo-btn">↩ تراجع</button>
+      <button id="undoBtn" class="undo-btn" disabled>↩ تراجع</button>
       <button id="newGameBtn">🔄 لعبة جديدة</button>
     </div>
   </div>
 
+  <!-- الإعدادات -->
   <div id="settingsScreen" class="screen hidden">
     <h2>الإعدادات</h2>
     <div class="settings-row">
@@ -419,23 +421,25 @@
     <button id="backFromSettingsBtn" style="margin-top:0.5rem;">رجوع</button>
   </div>
 
+  <!-- أفضل النتائج -->
   <div id="bestScoresScreen" class="screen hidden">
     <h2>أفضل النتائج</h2>
     <div id="scoresList" style="text-align:right; margin:1rem 0;">لا توجد نتائج بعد.</div>
     <button id="backFromScoresBtn">رجوع</button>
   </div>
 
+  <!-- طريقة اللعب -->
   <div id="howToPlayScreen" class="screen hidden">
     <h2>طريقة اللعب</h2>
     <p>حرك البلاطات المجاورة للمساحة الفارغة لإعادة ترتيب الأرقام تصاعدياً.</p>
     <p>الهدف: ترتيب الأرقام من ١ إلى آخر رقم ، والمساحة الفارغة في النهاية.</p>
     <p>المستويات المتاحة: 3×3 (سهل) ، 4×4 (متوسط) ، 5×5 (صعب) ، 6×6 (خبير) ، 7×7 (مستحيل).</p>
     <p>يمكنك التحريك باللمس أو السحب أو أسهم لوحة المفاتيح.</p>
-    <p>💡 زر التلميح: يظهر لك أفضل حركة ممكنة.</p>
     <p>↩ زر التراجع: يعيد آخر حركة قمت بها.</p>
     <button id="backFromHowToPlayBtn">رجوع</button>
   </div>
 
+  <!-- حول اللعبة -->
   <div id="aboutScreen" class="screen hidden">
     <h2>DrDer Puzzle 1</h2>
     <p>الإصدار 1.0</p>
@@ -447,12 +451,14 @@
 
 <script>
   (function() {
+    // تسجيل Service Worker
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js')
-        .then(() => console.log('Service Worker registered'))
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('Service Worker registered:', reg.scope))
         .catch(err => console.log('Service Worker registration failed:', err));
     }
 
+    // عناصر DOM
     const screens = {
       main: document.getElementById('mainMenu'),
       game: document.getElementById('gameScreen'),
@@ -471,7 +477,6 @@
     const aboutBtn = document.getElementById('aboutBtn');
     const backToMenuBtn = document.getElementById('backToMenuBtn');
     const newGameBtn = document.getElementById('newGameBtn');
-    const hintBtn = document.getElementById('hintBtn');
     const undoBtn = document.getElementById('undoBtn');
     const puzzleBoard = document.getElementById('puzzleBoard');
     const timerDisplay = document.getElementById('timerDisplay');
@@ -482,6 +487,7 @@
     const deleteScoresBtn = document.getElementById('deleteScoresBtn');
     const scoresList = document.getElementById('scoresList');
 
+    // حالة اللعبة
     let currentScreen = 'main';
     let gridSize = 4;
     let tiles = [];
@@ -493,16 +499,59 @@
     let timerEnabled = true;
     let movesCounterEnabled = true;
     let moveHistory = [];
-    let hintTimeout = null;
 
+    // حالة التثبيت
     let deferredPrompt = null;
     let installOverlay = null;
     let autoHideTimeout = null;
 
+    // ---------- دوال التثبيت ----------
+    function detectPlatform() {
+      const ua = navigator.userAgent || navigator.vendor || window.opera;
+      if (/android/i.test(ua)) return 'android';
+      if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) return 'ios';
+      return 'other';
+    }
+
+    function getInstallInstructions() {
+      const platform = detectPlatform();
+      if (platform === 'android') {
+        return `
+          <div class="platform-title">📱 أندرويد (Chrome):</div>
+          <div>١. اضغط على ⋮ (القائمة)</div>
+          <div>٢. اختر "إضافة إلى الشاشة الرئيسية"</div>
+        `;
+      } else if (platform === 'ios') {
+        return `
+          <div class="platform-title">📱 آيفون (Safari):</div>
+          <div>١. اضغط على زر المشاركة <span style="font-size:1.2rem;">📤</span></div>
+          <div>٢. اختر "Add to Home Screen"</div>
+        `;
+      }
+      return `
+        <div class="platform-title">💻 سطح المكتب:</div>
+        <div>استخدم Chrome أو Edge واضغط على أيقونة التثبيت في شريط العنوان</div>
+      `;
+    }
+
+    function canShowInstallOverlay() {
+      const dismissed = localStorage.getItem('drder_install_dismissed');
+      if (!dismissed) return true;
+      
+      const dismissedTime = parseInt(dismissed);
+      const now = Date.now();
+      const sevenDays = 7 * 24 * 60 * 60 * 1000;
+      
+      return (now - dismissedTime) > sevenDays;
+    }
+
     function showInstallOverlay() {
       if (installOverlay) return;
-      if (localStorage.getItem('drder_install_dismissed')) return;
       if (window.matchMedia('(display-mode: standalone)').matches) return;
+      if (!canShowInstallOverlay()) return;
+
+      const hasPrompt = !!deferredPrompt;
+      const instructions = getInstallInstructions();
 
       installOverlay = document.createElement('div');
       installOverlay.className = 'install-overlay';
@@ -511,32 +560,40 @@
         <div class="install-dialog">
           <div class="app-icon"></div>
           <h3>تثبيت DrDer Puzzle 1</h3>
-          <p>ثبّت التطبيق على جهازك لتجربة أسرع والوصول دون اتصال بالإنترنت</p>
+          ${hasPrompt 
+            ? '<p>ثبّت التطبيق على جهازك لتجربة أسرع والوصول دون اتصال بالإنترنت</p>'
+            : '<p>اتبع الخطوات التالية لتثبيت التطبيق:</p>'
+          }
+          ${!hasPrompt ? `<div class="manual-steps">${instructions}</div>` : ''}
           <div class="install-actions">
-            <button class="install-btn" id="installNowBtn">📲 تثبيت الآن</button>
+            ${hasPrompt 
+              ? '<button class="install-btn" id="installNowBtn">📲 تثبيت الآن</button>'
+              : ''
+            }
             <button class="later-btn" id="installLaterBtn">لاحقاً</button>
           </div>
         </div>
       `;
       document.body.appendChild(installOverlay);
 
-      document.getElementById('installNowBtn').addEventListener('click', async () => {
-        if (deferredPrompt) {
+      if (hasPrompt) {
+        document.getElementById('installNowBtn').addEventListener('click', async () => {
           deferredPrompt.prompt();
           const { outcome } = await deferredPrompt.userChoice;
           deferredPrompt = null;
-        }
-        removeInstallOverlay();
-        localStorage.setItem('drder_install_dismissed', '1');
-      });
+          removeInstallOverlay();
+          localStorage.setItem('drder_install_dismissed', Date.now().toString());
+        });
+      }
 
       document.getElementById('installLaterBtn').addEventListener('click', () => {
         removeInstallOverlay();
+        localStorage.setItem('drder_install_dismissed', Date.now().toString());
       });
 
       autoHideTimeout = setTimeout(() => {
         removeInstallOverlay();
-      }, 10000);
+      }, 15000);
     }
 
     function removeInstallOverlay() {
@@ -545,23 +602,32 @@
         autoHideTimeout = null;
       }
       if (installOverlay) {
-        installOverlay.remove();
-        installOverlay = null;
+        installOverlay.classList.add('hidden');
+        setTimeout(() => {
+          if (installOverlay) {
+            installOverlay.remove();
+            installOverlay = null;
+          }
+        }, 300);
       }
     }
 
+    // أحداث التثبيت
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      showInstallOverlay();
+      if (currentScreen === 'main') {
+        setTimeout(() => showInstallOverlay(), 1500);
+      }
     });
 
     window.addEventListener('appinstalled', () => {
       deferredPrompt = null;
       removeInstallOverlay();
-      localStorage.setItem('drder_install_dismissed', '1');
+      localStorage.setItem('drder_install_dismissed', Date.now().toString());
     });
 
+    // ---------- دوال الشاشات ----------
     function switchScreen(screenId) {
       Object.values(screens).forEach(s => s.classList.add('hidden'));
       screens[screenId].classList.remove('hidden');
@@ -569,6 +635,7 @@
       if (screenId === 'main') updateResumeButtonVisibility();
     }
 
+    // ---------- دوال الوقت والعداد ----------
     function formatTime(sec) {
       const m = Math.floor(sec / 60).toString().padStart(2, '0');
       const s = (sec % 60).toString().padStart(2, '0');
@@ -596,6 +663,7 @@
       movesDisplay.textContent = movesCounterEnabled ? moves : '--';
     }
 
+    // ---------- خوارزمية اللغز ----------
     function countInversions(arr) {
       let inv = 0;
       for (let i = 0; i < arr.length; i++) {
@@ -633,6 +701,7 @@
       return arr;
     }
 
+    // ---------- عرض اللوحة ----------
     function renderBoard() {
       puzzleBoard.innerHTML = '';
       const size = gridSize;
@@ -641,7 +710,6 @@
       tiles.forEach((value, index) => {
         const tileDiv = document.createElement('div');
         tileDiv.className = 'tile' + (value === 0 ? ' empty' : '');
-        tileDiv.dataset.index = index;
         if (value !== 0) {
           tileDiv.textContent = value;
           tileDiv.addEventListener('click', () => handleTileClick(index));
@@ -654,6 +722,7 @@
       });
     }
 
+    // ---------- الحركة والتراجع ----------
     function getAdjacentIndices(index) {
       const size = gridSize;
       const row = Math.floor(index / size);
@@ -664,10 +733,6 @@
       if (col > 0) adj.push(index - 1);
       if (col < size - 1) adj.push(index + 1);
       return adj;
-    }
-
-    function getMovableTiles() {
-      return getAdjacentIndices(emptyIndex).filter(idx => tiles[idx] !== 0);
     }
 
     function moveTile(tileIndex, recordHistory = true) {
@@ -701,8 +766,30 @@
 
     function handleTileClick(index) {
       if (tiles[index] === 0) return;
-      clearHintHighlight();
       moveTile(index);
+    }
+
+    function undoMove() {
+      if (!gameActive) return;
+      if (moveHistory.length === 0) return;
+      
+      const lastMove = moveHistory.pop();
+      tiles = [...lastMove.tiles];
+      emptyIndex = lastMove.emptyIndex;
+      moves = lastMove.moves;
+      timerSeconds = lastMove.timerSeconds;
+      
+      updateMovesDisplay();
+      timerDisplay.textContent = formatTime(timerSeconds);
+      renderBoard();
+      saveGameState();
+      updateUndoButton();
+    }
+
+    function updateUndoButton() {
+      if (undoBtn) {
+        undoBtn.disabled = !gameActive || moveHistory.length === 0;
+      }
     }
 
     function checkWin() {
@@ -723,102 +810,9 @@
       alert(`🎉 تم حل اللغز!\nالحركات: ${moves}\nالوقت: ${formatTime(timerSeconds)}`);
     }
 
-    function undoMove() {
-      if (!gameActive) return;
-      if (moveHistory.length === 0) return;
-      
-      clearHintHighlight();
-      const lastMove = moveHistory.pop();
-      tiles = [...lastMove.tiles];
-      emptyIndex = lastMove.emptyIndex;
-      moves = lastMove.moves;
-      timerSeconds = lastMove.timerSeconds;
-      
-      updateMovesDisplay();
-      timerDisplay.textContent = formatTime(timerSeconds);
-      renderBoard();
-      saveGameState();
-      updateUndoButton();
-    }
-
-    function updateUndoButton() {
-      if (undoBtn) {
-        undoBtn.disabled = !gameActive || moveHistory.length === 0;
-      }
-    }
-
-    function clearHintHighlight() {
-      if (hintTimeout) {
-        clearTimeout(hintTimeout);
-        hintTimeout = null;
-      }
-      document.querySelectorAll('.tile.hint-highlight').forEach(t => {
-        t.classList.remove('hint-highlight');
-      });
-    }
-
-    function calculateManhattanDistance(tilesArr, size) {
-      let distance = 0;
-      for (let i = 0; i < tilesArr.length; i++) {
-        const value = tilesArr[i];
-        if (value === 0) continue;
-        const targetIndex = value - 1;
-        const currentRow = Math.floor(i / size);
-        const currentCol = i % size;
-        const targetRow = Math.floor(targetIndex / size);
-        const targetCol = targetIndex % size;
-        distance += Math.abs(currentRow - targetRow) + Math.abs(currentCol - targetCol);
-      }
-      return distance;
-    }
-
-    function getHintMove() {
-      if (!gameActive) return null;
-      const movableTiles = getMovableTiles();
-      if (movableTiles.length === 0) return null;
-
-      let bestTile = null;
-      let bestScore = Infinity;
-
-      for (const tileIndex of movableTiles) {
-        const newTiles = [...tiles];
-        [newTiles[emptyIndex], newTiles[tileIndex]] = [newTiles[tileIndex], newTiles[emptyIndex]];
-        const newEmptyIndex = tileIndex;
-        
-        const distance = calculateManhattanDistance(newTiles, gridSize);
-        
-        if (distance < bestScore) {
-          bestScore = distance;
-          bestTile = tileIndex;
-        }
-      }
-
-      return bestTile;
-    }
-
-    function showHint() {
-      if (!gameActive) return;
-      
-      clearHintHighlight();
-      const hintTile = getHintMove();
-      
-      if (hintTile === null) return;
-      
-      const tileElements = puzzleBoard.querySelectorAll('.tile');
-      tileElements.forEach(el => {
-        if (parseInt(el.dataset.index) === hintTile) {
-          el.classList.add('hint-highlight');
-        }
-      });
-
-      hintTimeout = setTimeout(() => {
-        clearHintHighlight();
-      }, 2500);
-    }
-
+    // ---------- إدارة اللعبة ----------
     function startNewGame(size = gridSize) {
       stopTimer();
-      clearHintHighlight();
       gridSize = size;
       tiles = generateSolvablePuzzle(size);
       moves = 0;
@@ -879,6 +873,7 @@
       resumeBtn.style.display = saved ? 'block' : 'none';
     }
 
+    // ---------- أفضل النتائج ----------
     function saveBestScore() {
       const key = `drder_best_${gridSize}`;
       const prev = JSON.parse(localStorage.getItem(key)) || { moves: Infinity, time: Infinity, wins: 0 };
@@ -902,6 +897,7 @@
       scoresList.innerHTML = html || 'لا توجد نتائج بعد.';
     }
 
+    // ---------- الأحداث ----------
     startBtn.addEventListener('click', () => {
       const activeLevel = document.querySelector('.level-btn.active');
       const size = activeLevel ? parseInt(activeLevel.dataset.size) : 4;
@@ -931,16 +927,11 @@
     backToMenuBtn.addEventListener('click', () => {
       stopTimer();
       gameActive = false;
-      clearHintHighlight();
       switchScreen('main');
     });
 
     newGameBtn.addEventListener('click', () => {
       startNewGame(gridSize);
-    });
-
-    hintBtn.addEventListener('click', () => {
-      showHint();
     });
 
     undoBtn.addEventListener('click', () => {
@@ -972,30 +963,27 @@
     document.getElementById('backFromHowToPlayBtn').addEventListener('click', () => switchScreen('main'));
     document.getElementById('backFromAboutBtn').addEventListener('click', () => switchScreen('main'));
 
+    // دعم لوحة المفاتيح
     window.addEventListener('keydown', (e) => {
       if (currentScreen !== 'game' || !gameActive) return;
-      const key = e.key;
       
-      if (key === 'z' && e.ctrlKey) {
+      if (e.ctrlKey && e.key === 'z') {
         e.preventDefault();
         undoMove();
         return;
       }
       
-      if (key === 'h' && e.ctrlKey) {
-        e.preventDefault();
-        showHint();
-        return;
-      }
-      
-      e.preventDefault();
+      const key = e.key;
       const size = gridSize;
       let target = emptyIndex;
+      
       if (key === 'ArrowRight') target = emptyIndex + 1;
       else if (key === 'ArrowLeft') target = emptyIndex - 1;
       else if (key === 'ArrowUp') target = emptyIndex - size;
       else if (key === 'ArrowDown') target = emptyIndex + size;
       else return;
+      
+      e.preventDefault();
 
       if (target >= 0 && target < size * size && tiles[target] !== 0) {
         const emptyRow = Math.floor(emptyIndex / size);
@@ -1003,18 +991,21 @@
         const emptyCol = emptyIndex % size;
         const targetCol = target % size;
         if (Math.abs(emptyRow - targetRow) + Math.abs(emptyCol - targetCol) === 1) {
-          clearHintHighlight();
           moveTile(target);
         }
       }
     });
 
+    // التحميل الأولي
     updateResumeButtonVisibility();
 
+    // عرض رسالة التثبيت عند التحميل
     window.addEventListener('load', () => {
-      if (deferredPrompt) {
-        showInstallOverlay();
-      }
+      setTimeout(() => {
+        if (!window.matchMedia('(display-mode: standalone)').matches && canShowInstallOverlay()) {
+          showInstallOverlay();
+        }
+      }, 2000);
     });
   })();
 </script>
