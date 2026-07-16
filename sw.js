@@ -8,72 +8,33 @@ const ASSETS_TO_CACHE = [
 ];
 
 self.addEventListener('install', (event) => {
-  console.log('🔧 Service Worker: تثبيت...');
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('📦 Service Worker: تخزين الملفات');
-        return cache.addAll(ASSETS_TO_CACHE);
-      })
-      .then(() => {
-        console.log('⏭️ Service Worker: skipWaiting');
-        return self.skipWaiting();
-      })
+      .then((cache) => cache.addAll(ASSETS_TO_CACHE))
+      .then(() => self.skipWaiting())
   );
 });
 
 self.addEventListener('activate', (event) => {
-  console.log('🚀 Service Worker: تفعيل...');
   event.waitUntil(
-    caches.keys()
-      .then((cacheNames) => {
-        return Promise.all(
-          cacheNames
-            .filter((name) => name !== CACHE_NAME)
-            .map((name) => {
-              console.log('🗑️ Service Worker: حذف كاش قديم:', name);
-              return caches.delete(name);
-            })
-        );
-      })
-      .then(() => {
-        console.log('📢 Service Worker: claim');
-        return self.clients.claim();
-      })
+    caches.keys().then((names) => Promise.all(
+      names.filter(n => n !== CACHE_NAME).map(n => caches.delete(n))
+    )).then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
-
   event.respondWith(
-    caches.match(event.request)
-      .then((cachedResponse) => {
-        if (cachedResponse) {
-          return cachedResponse;
+    caches.match(event.request).then((cached) => {
+      if (cached) return cached;
+      return fetch(event.request).then((response) => {
+        if (response && response.status === 200 && response.type === 'basic') {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         }
-
-        return fetch(event.request)
-          .then((response) => {
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-
-            const responseToCache = response.clone();
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-
-            return response;
-          })
-          .catch(() => {
-            return new Response('أنت غير متصل بالإنترنت. يرجى التحقق من اتصالك.', {
-              status: 503,
-              statusText: 'Service Unavailable',
-              headers: { 'Content-Type': 'text/plain; charset=utf-8' }
-            });
-          });
-      })
+        return response;
+      }).catch(() => new Response('غير متصل بالإنترنت', { status: 503 }));
+    })
   );
 });
