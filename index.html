@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>DrDer Puzzle (1)</title>
   
-  <!-- Manifest لتطبيق الويب -->
   <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22DrDer%20Puzzle%20(1)%22%2C%22short_name%22%3A%22DrDer%20(1)%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f0a1e%22%2C%22theme_color%22%3A%22%237c3aed%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fi.ibb.co%2FYTXbwNT2%2F192-1.png%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%2C%7B%22src%22%3A%22https%3A%2F%2Fi.ibb.co%2FwhGd4Z8p%2F512-1.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
   <meta name="theme-color" content="#7c3aed">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -234,50 +233,90 @@
       margin: 0.5rem 0;
     }
 
-    .install-banner {
+    .install-overlay {
       position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #1a1033;
-      border: 2px solid #7c3aed;
-      color: white;
-      padding: 1rem 1.5rem;
-      border-radius: 2rem;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(10, 5, 20, 0.92);
+      backdrop-filter: blur(8px);
       display: flex;
       align-items: center;
-      gap: 1rem;
-      z-index: 200;
-      box-shadow: 0 10px 30px rgba(124, 58, 237, 0.4);
-      animation: slideUp 0.5s ease, fadeOut 0.5s ease 9.5s forwards;
-      max-width: 90%;
-      direction: rtl;
+      justify-content: center;
+      z-index: 9999;
+      animation: fadeInOverlay 0.3s ease;
     }
 
-    .install-banner button {
-      padding: 0.5rem 1.2rem;
-      font-size: 0.9rem;
-      white-space: nowrap;
-      box-shadow: 0 4px 0 #4c1d95;
+    .install-dialog {
+      background: #1a1033;
+      border: 2px solid #7c3aed;
+      border-radius: 2rem;
+      padding: 2rem;
+      text-align: center;
+      max-width: 340px;
+      width: 90%;
+      box-shadow: 0 20px 50px rgba(124, 58, 237, 0.5);
+      animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    .install-banner .close-banner {
-      background: transparent;
-      border: none;
+    .install-dialog .app-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
+      margin: 0 auto 1rem;
+      background: url('https://i.ibb.co/YTXbwNT2/192-1.png') center/cover;
+      box-shadow: 0 8px 25px rgba(124, 58, 237, 0.6);
+    }
+
+    .install-dialog h3 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: #fff;
+    }
+
+    .install-dialog p {
       color: #c4b5fd;
-      font-size: 1.3rem;
-      cursor: pointer;
-      padding: 0 0.3rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .install-dialog .install-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+
+    .install-dialog .install-btn {
+      background: #7c3aed;
+      font-size: 1.2rem;
+      padding: 1rem;
+      box-shadow: 0 6px 0 #4c1d95;
+      animation: pulse 2s infinite;
+    }
+
+    .install-dialog .later-btn {
+      background: transparent;
+      border: 1px solid #4b3b6b;
+      color: #c4b5fd;
       box-shadow: none;
+      font-size: 0.95rem;
     }
 
-    @keyframes slideUp {
-      from { bottom: -100px; opacity: 0; }
-      to { bottom: 20px; opacity: 1; }
+    @keyframes fadeInOverlay {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
-    @keyframes fadeOut {
-      to { opacity: 0; visibility: hidden; }
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 6px 0 #4c1d95; }
+      50% { box-shadow: 0 6px 0 #4c1d95, 0 0 30px rgba(124, 58, 237, 0.6); }
     }
 
     @media (max-width: 400px) {
@@ -289,7 +328,6 @@
 </head>
 <body>
 <div class="game-container" id="app">
-  <!-- القائمة الرئيسية -->
   <div id="mainMenu" class="screen">
     <div class="header">
       <span class="logo">🧩</span>
@@ -312,7 +350,6 @@
     </div>
   </div>
 
-  <!-- شاشة اللعب -->
   <div id="gameScreen" class="screen hidden">
     <div class="header" style="justify-content: space-between;">
       <button id="backToMenuBtn" class="secondary" style="padding:0.5rem 1rem;">↩ رجوع</button>
@@ -329,7 +366,6 @@
     </div>
   </div>
 
-  <!-- الإعدادات -->
   <div id="settingsScreen" class="screen hidden">
     <h2>الإعدادات</h2>
     <div class="settings-row">
@@ -344,14 +380,12 @@
     <button id="backFromSettingsBtn" style="margin-top:0.5rem;">رجوع</button>
   </div>
 
-  <!-- أفضل النتائج -->
   <div id="bestScoresScreen" class="screen hidden">
     <h2>أفضل النتائج</h2>
     <div id="scoresList" style="text-align:right; margin:1rem 0;">لا توجد نتائج بعد.</div>
     <button id="backFromScoresBtn">رجوع</button>
   </div>
 
-  <!-- طريقة اللعب -->
   <div id="howToPlayScreen" class="screen hidden">
     <h2>طريقة اللعب</h2>
     <p>حرك البلاطات المجاورة للمساحة الفارغة لإعادة ترتيب الأرقام تصاعدياً.</p>
@@ -361,7 +395,6 @@
     <button id="backFromHowToPlayBtn">رجوع</button>
   </div>
 
-  <!-- حول اللعبة -->
   <div id="aboutScreen" class="screen hidden">
     <h2>DrDer Puzzle (1)</h2>
     <p>الإصدار 1.0</p>
@@ -373,13 +406,11 @@
 
 <script>
   (function() {
-    // ---------- Service Worker للتطبيق ----------
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('data:application/javascript,self.addEventListener("fetch",e=>{})')
         .catch(() => {});
     }
 
-    // ---------- عناصر DOM ----------
     const screens = {
       main: document.getElementById('mainMenu'),
       game: document.getElementById('gameScreen'),
@@ -407,7 +438,6 @@
     const deleteScoresBtn = document.getElementById('deleteScoresBtn');
     const scoresList = document.getElementById('scoresList');
 
-    // ---------- الحالة ----------
     let currentScreen = 'main';
     let gridSize = 4;
     let tiles = [];
@@ -419,65 +449,73 @@
     let timerEnabled = true;
     let movesCounterEnabled = true;
 
-    // ---------- رسالة تثبيت التطبيق ----------
     let deferredPrompt = null;
-    let installBanner = null;
+    let installOverlay = null;
+    let autoHideTimeout = null;
 
-    function showInstallBanner() {
-      if (installBanner) return;
+    function showInstallOverlay() {
+      if (installOverlay) return;
       if (localStorage.getItem('drder_install_dismissed')) return;
-      
-      installBanner = document.createElement('div');
-      installBanner.className = 'install-banner';
-      installBanner.innerHTML = `
-        <span>📲 تثبيت التطبيق على جهازك</span>
-        <button id="installBtn">تثبيت</button>
-        <button class="close-banner" id="closeBannerBtn">✕</button>
-      `;
-      document.body.appendChild(installBanner);
+      if (window.matchMedia('(display-mode: standalone)').matches) return;
 
-      document.getElementById('installBtn').addEventListener('click', async () => {
+      installOverlay = document.createElement('div');
+      installOverlay.className = 'install-overlay';
+      installOverlay.id = 'installOverlay';
+      installOverlay.innerHTML = `
+        <div class="install-dialog">
+          <div class="app-icon"></div>
+          <h3>تثبيت DrDer Puzzle (1)</h3>
+          <p>ثبّت التطبيق على جهازك لتجربة أسرع والوصول دون اتصال بالإنترنت</p>
+          <div class="install-actions">
+            <button class="install-btn" id="installNowBtn">📲 تثبيت الآن</button>
+            <button class="later-btn" id="installLaterBtn">لاحقاً</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(installOverlay);
+
+      document.getElementById('installNowBtn').addEventListener('click', async () => {
         if (deferredPrompt) {
           deferredPrompt.prompt();
           const { outcome } = await deferredPrompt.userChoice;
           deferredPrompt = null;
         }
-        removeInstallBanner();
-      });
-
-      document.getElementById('closeBannerBtn').addEventListener('click', () => {
+        removeInstallOverlay();
         localStorage.setItem('drder_install_dismissed', '1');
-        removeInstallBanner();
       });
 
-      setTimeout(() => {
-        removeInstallBanner();
+      document.getElementById('installLaterBtn').addEventListener('click', () => {
+        removeInstallOverlay();
+      });
+
+      autoHideTimeout = setTimeout(() => {
+        removeInstallOverlay();
       }, 10000);
     }
 
-    function removeInstallBanner() {
-      if (installBanner) {
-        installBanner.remove();
-        installBanner = null;
+    function removeInstallOverlay() {
+      if (autoHideTimeout) {
+        clearTimeout(autoHideTimeout);
+        autoHideTimeout = null;
+      }
+      if (installOverlay) {
+        installOverlay.remove();
+        installOverlay = null;
       }
     }
 
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      showInstallBanner();
+      showInstallOverlay();
     });
 
     window.addEventListener('appinstalled', () => {
       deferredPrompt = null;
-      removeInstallBanner();
+      removeInstallOverlay();
+      localStorage.setItem('drder_install_dismissed', '1');
     });
 
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-      localStorage.setItem('drder_install_dismissed', '1');
-    }
-
-    // ---------- دوال مساعدة ----------
     function switchScreen(screenId) {
       Object.values(screens).forEach(s => s.classList.add('hidden'));
       screens[screenId].classList.remove('hidden');
@@ -512,7 +550,6 @@
       movesDisplay.textContent = movesCounterEnabled ? moves : '--';
     }
 
-    // ---------- قابلية الحل والتوليد ----------
     function countInversions(arr) {
       let inv = 0;
       for (let i = 0; i < arr.length; i++) {
@@ -548,7 +585,6 @@
       return arr;
     }
 
-    // ---------- عرض اللوحة ----------
     function renderBoard() {
       puzzleBoard.innerHTML = '';
       const size = gridSize;
@@ -569,7 +605,6 @@
       });
     }
 
-    // ---------- الحركة ----------
     function getAdjacentIndices(index) {
       const size = gridSize;
       const row = Math.floor(index / size);
@@ -620,7 +655,6 @@
       alert(`🎉 تم حل اللغز!\nالحركات: ${moves}\nالوقت: ${formatTime(timerSeconds)}`);
     }
 
-    // ---------- إدارة اللعبة ----------
     function startNewGame(size = gridSize) {
       stopTimer();
       gridSize = size;
@@ -678,7 +712,6 @@
       resumeBtn.style.display = saved ? 'block' : 'none';
     }
 
-    // ---------- أفضل النتائج ----------
     function saveBestScore() {
       const key = `drder_best_${gridSize}`;
       const prev = JSON.parse(localStorage.getItem(key)) || { moves: Infinity, time: Infinity, wins: 0 };
@@ -702,7 +735,6 @@
       scoresList.innerHTML = html || 'لا توجد نتائج بعد.';
     }
 
-    // ---------- الأحداث ----------
     startBtn.addEventListener('click', () => {
       const activeLevel = document.querySelector('.level-btn.active');
       const size = activeLevel ? parseInt(activeLevel.dataset.size) : 4;
@@ -764,7 +796,6 @@
     document.getElementById('backFromHowToPlayBtn').addEventListener('click', () => switchScreen('main'));
     document.getElementById('backFromAboutBtn').addEventListener('click', () => switchScreen('main'));
 
-    // دعم لوحة المفاتيح
     window.addEventListener('keydown', (e) => {
       if (currentScreen !== 'game' || !gameActive) return;
       const key = e.key;
@@ -788,12 +819,11 @@
       }
     });
 
-    // التحميل الأولي
     updateResumeButtonVisibility();
 
     window.addEventListener('load', () => {
       if (deferredPrompt) {
-        showInstallBanner();
+        showInstallOverlay();
       }
     });
   })();
