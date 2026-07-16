@@ -10,16 +10,13 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="DrDer Puzzle 1">
+  <meta name="description" content="لعبة ألغاز منزلقة كلاسيكية بتصميم عصري - DrDer Puzzle 1">
   <link rel="apple-touch-icon" href="./icons/192.png">
   <link rel="icon" sizes="192x192" href="./icons/192.png">
   <link rel="icon" sizes="512x512" href="./icons/512.png">
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: 'Segoe UI', 'Tahoma', sans-serif;
@@ -60,10 +57,7 @@
       flex-wrap: wrap;
     }
 
-    .logo {
-      font-size: 2.5rem;
-      filter: drop-shadow(0 0 8px #7c3aed);
-    }
+    .logo { font-size: 2.5rem; filter: drop-shadow(0 0 8px #7c3aed); }
 
     .title {
       font-size: 2rem;
@@ -74,22 +68,10 @@
       background-clip: text;
     }
 
-    .screen {
-      display: flex;
-      flex-direction: column;
-      gap: 1.2rem;
-    }
+    .screen { display: flex; flex-direction: column; gap: 1.2rem; }
+    .hidden { display: none !important; }
 
-    .hidden {
-      display: none !important;
-    }
-
-    .menu-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 0.8rem;
-      margin-top: 0.5rem;
-    }
+    .menu-grid { display: flex; flex-direction: column; gap: 0.8rem; margin-top: 0.5rem; }
 
     button {
       background: #7c3aed;
@@ -100,7 +82,7 @@
       border-radius: 2.5rem;
       font-size: 1.1rem;
       cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
+      transition: all 0.15s ease;
       box-shadow: 0 6px 0 #4c1d95;
       letter-spacing: 0.5px;
       border: 1px solid rgba(255,255,255,0.1);
@@ -108,33 +90,14 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    button:active {
-      transform: translateY(2px);
-      box-shadow: 0 3px 0 #4c1d95;
-    }
+    button:active { transform: translateY(2px); box-shadow: 0 3px 0 #4c1d95; }
+    button.secondary { background: #2d2145; box-shadow: 0 4px 0 #1a1033; border-color: #4b3b6b; }
+    button.undo-btn { background: #6366f1; box-shadow: 0 4px 0 #4338ca; }
+    button.install-permanent-btn { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 6px 0 #047857; }
+    button.update-btn { background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 6px 0 #b45309; color: #1a1033; }
+    button:disabled { opacity: 0.5; pointer-events: none; }
 
-    button.secondary {
-      background: #2d2145;
-      box-shadow: 0 4px 0 #1a1033;
-      border-color: #4b3b6b;
-    }
-
-    button.undo-btn {
-      background: #6366f1;
-      box-shadow: 0 4px 0 #4338ca;
-    }
-
-    button:disabled {
-      opacity: 0.5;
-      pointer-events: none;
-    }
-
-    .level-selector {
-      display: flex;
-      gap: 0.5rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
+    .level-selector { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
 
     .level-btn {
       padding: 0.6rem 1rem;
@@ -146,10 +109,7 @@
       min-width: 50px;
     }
 
-    .level-btn.active {
-      background: #7c3aed;
-      box-shadow: 0 4px 0 #4c1d95;
-    }
+    .level-btn.active { background: #7c3aed; box-shadow: 0 4px 0 #4c1d95; }
 
     .puzzle-board {
       display: grid;
@@ -180,11 +140,7 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    .tile.empty {
-      background: transparent;
-      box-shadow: none;
-      pointer-events: none;
-    }
+    .tile.empty { background: transparent; box-shadow: none; pointer-events: none; }
 
     .stats {
       display: flex;
@@ -195,24 +151,10 @@
       border-radius: 2rem;
     }
 
-    .game-actions {
-      display: flex;
-      gap: 0.5rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
+    .game-actions { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+    .game-actions button { font-size: 0.9rem; padding: 0.7rem 1rem; }
 
-    .game-actions button {
-      font-size: 0.9rem;
-      padding: 0.7rem 1rem;
-    }
-
-    .settings-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 0.8rem 0;
-    }
+    .settings-row { display: flex; justify-content: space-between; align-items: center; margin: 0.8rem 0; }
 
     .toggle {
       background: #2d2145;
@@ -224,9 +166,7 @@
       transition: background 0.2s;
     }
 
-    .toggle.active {
-      background: #7c3aed;
-    }
+    .toggle.active { background: #7c3aed; }
 
     .toggle::after {
       content: "";
@@ -240,22 +180,14 @@
       transition: right 0.2s;
     }
 
-    .toggle.active::after {
-      right: 25px;
-    }
+    .toggle.active::after { right: 25px; }
+    hr { border-color: #2d2145; margin: 0.5rem 0; }
 
-    hr {
-      border-color: #2d2145;
-      margin: 0.5rem 0;
-    }
-
-    /* ========== نافذة التثبيت ========== */
-    .pwa-install-overlay {
+    /* ========== نظام النوافذ الموحد ========== */
+    .modal-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       background: rgba(10, 5, 20, 0.93);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
@@ -263,85 +195,62 @@
       align-items: center;
       justify-content: center;
       z-index: 99999;
-      animation: pwaFadeIn 0.35s ease-out;
+      animation: modalFadeIn 0.35s ease-out;
       padding: 1rem;
     }
 
-    .pwa-install-modal {
+    .modal-dialog {
       background: #1a1033;
       border: 2px solid #7c3aed;
       border-radius: 2rem;
       padding: 2.5rem 2rem 2rem;
       text-align: center;
-      max-width: 380px;
+      max-width: 400px;
       width: 100%;
       box-shadow: 0 25px 60px rgba(124, 58, 237, 0.45);
-      animation: pwaSlideUp 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      animation: modalSlideUp 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      max-height: 90vh;
+      overflow-y: auto;
     }
 
-    .pwa-app-icon {
-      width: 90px;
-      height: 90px;
-      border-radius: 22px;
-      margin: 0 auto 1.5rem;
-      background: url('./icons/192.png') center/cover;
-      box-shadow: 0 10px 30px rgba(124, 58, 237, 0.55);
+    .modal-icon {
+      font-size: 4rem;
+      margin-bottom: 0.5rem;
     }
 
-    .pwa-modal-title {
+    .modal-title {
       font-size: 1.6rem;
       font-weight: 700;
-      color: #ffffff;
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.5rem;
     }
 
-    .pwa-modal-desc {
+    .modal-subtitle {
       color: #c4b5fd;
       font-size: 1rem;
       line-height: 1.6;
-      margin-bottom: 1.8rem;
+      margin-bottom: 1.5rem;
     }
 
-    .pwa-modal-desc.manual {
-      background: #2d2145;
-      border-radius: 1rem;
-      padding: 1rem 1.2rem;
-      text-align: right;
-      font-size: 0.95rem;
-    }
-
-    .pwa-modal-desc.manual .platform-name {
-      font-weight: 700;
-      color: #c084fc;
-      margin-bottom: 0.4rem;
-    }
-
-    .pwa-modal-actions {
+    .modal-actions {
       display: flex;
       flex-direction: column;
-      gap: 0.8rem;
+      gap: 0.7rem;
     }
 
-    .pwa-install-btn {
+    .modal-primary-btn {
       background: #7c3aed;
       color: white;
       border: none;
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       font-weight: 700;
       padding: 1rem 1.5rem;
       border-radius: 2.5rem;
       cursor: pointer;
-      box-shadow: 0 8px 0 #4c1d95;
-      transition: all 0.15s ease;
-      animation: pwaPulse 2.2s infinite;
+      box-shadow: 0 7px 0 #4c1d95;
+      animation: pulseBtn 2s infinite;
     }
 
-    .pwa-install-btn:active {
-      transform: translateY(3px);
-      box-shadow: 0 4px 0 #4c1d95;
-    }
-
-    .pwa-later-btn {
+    .modal-secondary-btn {
       background: transparent;
       border: 1.5px solid #4b3b6b;
       color: #c4b5fd;
@@ -350,32 +259,28 @@
       padding: 0.8rem;
       border-radius: 2.5rem;
       cursor: pointer;
-      transition: all 0.15s ease;
       box-shadow: none;
     }
 
-    .pwa-later-btn:active {
-      background: rgba(255,255,255,0.05);
+    .modal-secondary-btn:active { background: rgba(255,255,255,0.05); }
+
+    .platform-instructions {
+      background: #2d2145;
+      border-radius: 1rem;
+      padding: 1rem 1.2rem;
+      text-align: right;
+      font-size: 0.9rem;
+      line-height: 1.8;
+      margin-bottom: 1rem;
+    }
+
+    .platform-instructions .platform-name {
+      font-weight: 700;
+      color: #c084fc;
+      margin-bottom: 0.3rem;
     }
 
     /* ========== نافذة الفوز ========== */
-    .victory-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(10, 5, 20, 0.9);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 99998;
-      animation: victoryFadeIn 0.4s ease-out;
-      padding: 1rem;
-    }
-
     .victory-modal {
       background: linear-gradient(145deg, #1e1345, #1a1033);
       border: 2px solid #7c3aed;
@@ -385,13 +290,12 @@
       max-width: 400px;
       width: 100%;
       box-shadow: 0 30px 70px rgba(124, 58, 237, 0.5), inset 0 1px 0 rgba(255,255,255,0.05);
-      animation: victoryPopIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     .victory-icon {
       font-size: 4.5rem;
       margin-bottom: 0.5rem;
-      animation: victoryBounce 0.6s ease-out 0.2s both;
+      animation: bounceIcon 0.6s ease-out 0.2s both;
       filter: drop-shadow(0 10px 20px rgba(251, 191, 36, 0.4));
     }
 
@@ -402,182 +306,80 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      margin-bottom: 0.3rem;
-      animation: victoryFadeIn 0.4s ease-out 0.3s both;
-    }
-
-    .victory-subtitle {
-      color: #c4b5fd;
-      font-size: 1.1rem;
-      margin-bottom: 1.5rem;
-      animation: victoryFadeIn 0.4s ease-out 0.4s both;
     }
 
     .victory-stats {
       background: #2d2145;
       border-radius: 1.5rem;
       padding: 1.2rem 1.5rem;
-      margin-bottom: 1.8rem;
+      margin: 1.5rem 0;
       display: flex;
       justify-content: space-around;
       align-items: center;
-      gap: 0.5rem;
-      animation: victoryFadeIn 0.4s ease-out 0.5s both;
     }
 
-    .victory-stat {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.3rem;
-    }
+    .victory-stat { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; }
+    .victory-stat-icon { font-size: 1.6rem; }
+    .victory-stat-value { font-size: 1.3rem; font-weight: 700; }
+    .victory-stat-label { font-size: 0.8rem; color: #a78bfa; }
 
-    .victory-stat-icon {
-      font-size: 1.6rem;
-    }
+    .victory-stat-divider { width: 1px; height: 40px; background: #4b3b6b; }
 
-    .victory-stat-value {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: #fff;
-    }
-
-    .victory-stat-label {
-      font-size: 0.8rem;
-      color: #a78bfa;
-      font-weight: 500;
-    }
-
-    .victory-stat-divider {
-      width: 1px;
-      height: 40px;
-      background: #4b3b6b;
-    }
-
-    .victory-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 0.7rem;
-      animation: victoryFadeIn 0.4s ease-out 0.6s both;
-    }
-
-    .victory-next-btn {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      color: #1a1033;
-      border: none;
-      font-size: 1.2rem;
-      font-weight: 700;
-      padding: 1rem 1.5rem;
-      border-radius: 2.5rem;
-      cursor: pointer;
-      box-shadow: 0 7px 0 #b45309;
-      transition: all 0.15s ease;
-      animation: victoryPulseGold 2s infinite;
-    }
-
-    .victory-next-btn:active {
-      transform: translateY(3px);
-      box-shadow: 0 3px 0 #b45309;
-    }
-
-    .victory-newgame-btn {
-      background: #7c3aed;
+    /* ========== تحديث التطبيق ========== */
+    .update-banner {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a1033;
+      border: 2px solid #f59e0b;
       color: white;
-      border: none;
-      font-size: 1.1rem;
-      font-weight: 600;
-      padding: 0.9rem 1.5rem;
-      border-radius: 2.5rem;
-      cursor: pointer;
-      box-shadow: 0 6px 0 #4c1d95;
-      transition: all 0.15s ease;
+      padding: 1rem 1.5rem;
+      border-radius: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      z-index: 200;
+      box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4);
+      animation: slideUpBanner 0.5s ease;
+      max-width: 90%;
     }
 
-    .victory-newgame-btn:active {
-      transform: translateY(2px);
-      box-shadow: 0 3px 0 #4c1d95;
+    @keyframes modalFadeIn { from { opacity: 0; } to { opacity: 1; } }
+    
+    @keyframes modalSlideUp {
+      from { transform: translateY(40px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
 
-    .victory-home-btn {
-      background: transparent;
-      border: 1.5px solid #4b3b6b;
-      color: #c4b5fd;
-      font-size: 1rem;
-      font-weight: 600;
-      padding: 0.8rem;
-      border-radius: 2.5rem;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      box-shadow: none;
+    @keyframes pulseBtn {
+      0%, 100% { box-shadow: 0 7px 0 #4c1d95; }
+      50% { box-shadow: 0 7px 0 #4c1d95, 0 0 30px rgba(124, 58, 237, 0.6); }
     }
 
-    .victory-home-btn:active {
-      background: rgba(255,255,255,0.05);
-    }
-
-    @keyframes victoryFadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    @keyframes victoryPopIn {
-      from { transform: scale(0.7) translateY(30px); opacity: 0; }
-      to { transform: scale(1) translateY(0); opacity: 1; }
-    }
-
-    @keyframes victoryBounce {
+    @keyframes bounceIcon {
       0% { transform: scale(0); }
       50% { transform: scale(1.2); }
       70% { transform: scale(0.9); }
       100% { transform: scale(1); }
     }
 
-    @keyframes victoryPulseGold {
-      0%, 100% { box-shadow: 0 7px 0 #b45309; }
-      50% { box-shadow: 0 7px 0 #b45309, 0 0 30px rgba(245, 158, 11, 0.5); }
-    }
-
-    @keyframes pwaFadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    @keyframes pwaSlideUp {
-      from { transform: translateY(40px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    @keyframes pwaPulse {
-      0%, 100% { box-shadow: 0 8px 0 #4c1d95; }
-      50% { box-shadow: 0 8px 0 #4c1d95, 0 0 35px rgba(124, 58, 237, 0.65); }
+    @keyframes slideUpBanner {
+      from { bottom: -100px; opacity: 0; }
+      to { bottom: 20px; opacity: 1; }
     }
 
     @media (max-width: 400px) {
-      .game-container {
-        padding: 1rem 0.8rem;
-      }
-      .game-actions button {
-        font-size: 0.8rem;
-        padding: 0.6rem 0.8rem;
-      }
-      .victory-modal {
-        padding: 2rem 1.5rem 1.5rem;
-      }
-      .victory-stats {
-        padding: 1rem;
-        gap: 0.3rem;
-      }
-      .victory-stat-value {
-        font-size: 1.1rem;
-      }
-      .pwa-install-modal {
-        padding: 2rem 1.5rem 1.5rem;
-      }
+      .game-container { padding: 1rem 0.8rem; }
+      .game-actions button { font-size: 0.8rem; padding: 0.6rem 0.8rem; }
+      .modal-dialog { padding: 2rem 1.5rem 1.5rem; }
+      .victory-stats { padding: 1rem; }
     }
   </style>
 </head>
 <body>
 <div class="game-container" id="app">
+  <!-- القائمة الرئيسية -->
   <div id="mainMenu" class="screen">
     <div class="header">
       <span class="logo">🧩</span>
@@ -597,9 +399,12 @@
       <button id="settingsBtn">⚙️ الإعدادات</button>
       <button id="howToPlayBtn">❓ طريقة اللعب</button>
       <button id="aboutBtn">ℹ️ حول اللعبة</button>
+      <!-- زر التثبيت الدائم -->
+      <button id="permanentInstallBtn" class="install-permanent-btn" style="display: none;">📲 تثبيت التطبيق</button>
     </div>
   </div>
 
+  <!-- شاشة اللعب -->
   <div id="gameScreen" class="screen hidden">
     <div class="header" style="justify-content: space-between;">
       <button id="backToMenuBtn" class="secondary" style="padding:0.5rem 1rem;">↩ رجوع</button>
@@ -617,6 +422,7 @@
     </div>
   </div>
 
+  <!-- الإعدادات -->
   <div id="settingsScreen" class="screen hidden">
     <h2>الإعدادات</h2>
     <div class="settings-row">
@@ -631,161 +437,380 @@
     <button id="backFromSettingsBtn" style="margin-top:0.5rem;">رجوع</button>
   </div>
 
+  <!-- أفضل النتائج -->
   <div id="bestScoresScreen" class="screen hidden">
     <h2>أفضل النتائج</h2>
     <div id="scoresList" style="text-align:right; margin:1rem 0;">لا توجد نتائج بعد.</div>
     <button id="backFromScoresBtn">رجوع</button>
   </div>
 
+  <!-- طريقة اللعب -->
   <div id="howToPlayScreen" class="screen hidden">
     <h2>طريقة اللعب</h2>
     <p>حرك البلاطات المجاورة للمساحة الفارغة لإعادة ترتيب الأرقام تصاعدياً.</p>
     <p>الهدف: ترتيب الأرقام من ١ إلى آخر رقم ، والمساحة الفارغة في النهاية.</p>
-    <p>المستويات المتاحة: 3×3 (سهل) ، 4×4 (متوسط) ، 5×5 (صعب) ، 6×6 (خبير) ، 7×7 (مستحيل).</p>
-    <p>يمكنك التحريك باللمس أو السحب أو أسهم لوحة المفاتيح.</p>
+    <p>المستويات: 3×3 إلى 7×7.</p>
     <p>↩ زر التراجع: يعيد آخر حركة قمت بها.</p>
     <button id="backFromHowToPlayBtn">رجوع</button>
   </div>
 
+  <!-- حول اللعبة -->
   <div id="aboutScreen" class="screen hidden">
     <h2>DrDer Puzzle 1</h2>
     <p>الإصدار 1.0</p>
     <p>© DrDer</p>
-    <p>لعبة ألغاز منزلقة كلاسيكية بتصميم عصري.</p>
+    <p>لعبة ألغاز منزلقة كلاسيكية.</p>
     <button id="backFromAboutBtn">رجوع</button>
   </div>
 </div>
 
 <script>
 (function() {
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('SW registered:', reg.scope))
-        .catch(err => console.warn('SW failed:', err));
-    });
-  }
+  'use strict';
 
-  const PWA = {
+  // ==================== نظام PWA المتكامل ====================
+  const PWASystem = {
     deferredPrompt: null,
+    swRegistration: null,
     isStandalone: false,
-    autoCloseTimer: null,
+    hasPrompt: false,
+    promptReceived: false,
+    gamesPlayed: 0,
 
-    init() {
-      this.isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+    // التشخيص الكامل
+    diagnostic() {
+      console.group('🔍 PWA Diagnostic Report - DrDer Puzzle 1');
+      console.log('📅 Time:', new Date().toLocaleString());
+      console.log('🌐 URL:', window.location.href);
       
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        this.deferredPrompt = e;
-        setTimeout(() => this.showInstallModal(), 2500);
-      });
+      const checks = {
+        https: window.location.protocol === 'https:' || window.location.hostname === 'localhost',
+        manifest: false,
+        serviceWorker: false,
+        standalone: window.matchMedia('(display-mode: standalone)').matches,
+        beforeinstallprompt: this.promptReceived,
+        installed: window.matchMedia('(display-mode: standalone)').matches,
+        icon192: false,
+        icon512: false,
+      };
 
-      window.addEventListener('appinstalled', () => {
-        this.deferredPrompt = null;
-        this.removeModal();
-        this.isStandalone = true;
-      });
-
-      if (!this.isStandalone) {
-        setTimeout(() => {
-          if (!this.deferredPrompt && !this.isStandalone) {
-            this.showManualModal();
+      // فحص Manifest
+      fetch('./manifest.json')
+        .then(r => {
+          checks.manifest = r.ok;
+          console.log(r.ok ? '✅ Manifest loaded' : '❌ Manifest failed');
+          return r.ok ? r.json() : null;
+        })
+        .then(data => {
+          if (data) {
+            console.log('  - name:', data.name);
+            console.log('  - display:', data.display);
+            console.log('  - icons:', data.icons?.length || 0);
           }
-        }, 4000);
+        })
+        .catch(() => console.log('❌ Manifest fetch error'));
+
+      // فحص Service Worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistration().then(reg => {
+          checks.serviceWorker = !!reg;
+          console.log(reg ? '✅ Service Worker registered' : '❌ Service Worker not registered');
+          if (reg) {
+            console.log('  - scope:', reg.scope);
+            console.log('  - state:', reg.active?.state);
+          }
+        });
+      } else {
+        console.log('❌ Service Worker not supported');
       }
+
+      // فحص beforeinstallprompt
+      console.log(this.promptReceived ? '✅ beforeinstallprompt received' : '❌ beforeinstallprompt NOT received');
+      
+      if (!this.promptReceived && !checks.standalone) {
+        console.log('💡 Possible reasons:');
+        console.log('  1. App already installed');
+        console.log('  2. User previously dismissed install prompt');
+        console.log('  3. Not enough engagement (Chrome requires user interaction)');
+        console.log('  4. Manifest issues');
+        console.log('  5. Not served over HTTPS');
+        console.log('  6. Service Worker not registered properly');
+      }
+
+      // فحص الأيقونات
+      [192, 512].forEach(size => {
+        const img = new Image();
+        img.onload = () => {
+          checks[`icon${size}`] = true;
+          console.log(`✅ Icon ${size}x${size} loaded`);
+        };
+        img.onerror = () => console.log(`❌ Icon ${size}x${size} failed`);
+        img.src = `./icons/${size}.png`;
+      });
+
+      console.log('📊 Summary:', checks);
+      console.groupEnd();
+      
+      return checks;
     },
 
-    getPlatformInstructions() {
+    // الكشف عن المنصة
+    detectPlatform() {
       const ua = navigator.userAgent.toLowerCase();
       if (/android/.test(ua)) {
-        return {
-          platform: 'Android',
-          steps: 'من قائمة المتصفح (⋮) اختر "إضافة إلى الشاشة الرئيسية" أو "تثبيت التطبيق".'
-        };
+        if (/samsung/.test(ua)) return 'samsung';
+        if (/edg/.test(ua)) return 'edge-android';
+        return 'android-chrome';
       }
-      if (/iphone|ipad|ipod/.test(ua)) {
-        return {
-          platform: 'iPhone',
-          steps: 'من زر المشاركة (📤) في Safari اختر "Add to Home Screen".'
-        };
-      }
-      return {
-        platform: 'الحاسوب',
-        steps: 'استخدم Chrome أو Edge واضغط على أيقونة التثبيت (⬇️) في شريط العنوان.'
-      };
+      if (/iphone|ipad|ipod/.test(ua)) return 'ios';
+      if (/macintosh/.test(ua)) return 'mac';
+      if (/windows/.test(ua)) return 'windows';
+      return 'other';
     },
 
-    createModal(hasPrompt) {
-      this.removeModal();
-      const overlay = document.createElement('div');
-      overlay.className = 'pwa-install-overlay';
-      overlay.id = 'pwaInstallOverlay';
+    // تعليمات التثبيت حسب المنصة
+    getPlatformInstructions() {
+      const platform = this.detectPlatform();
+      const instructions = {
+        'android-chrome': {
+          name: 'Chrome على Android',
+          steps: '١. اضغط على ⋮ (القائمة)<br>٢. اختر "تثبيت التطبيق" أو "إضافة إلى الشاشة الرئيسية"'
+        },
+        'samsung': {
+          name: 'Samsung Internet',
+          steps: '١. اضغط على ☰ (القائمة)<br>٢. اختر "إضافة إلى الشاشة الرئيسية"'
+        },
+        'edge-android': {
+          name: 'Edge على Android',
+          steps: '١. اضغط على ⋯ (القائمة)<br>٢. اختر "إضافة إلى الهاتف"'
+        },
+        'ios': {
+          name: 'Safari على iPhone/iPad',
+          steps: '١. اضغط على زر المشاركة 📤<br>٢. اختر "Add to Home Screen"'
+        },
+        'mac': {
+          name: 'Mac',
+          steps: 'استخدم Chrome أو Edge واضغط على أيقونة التثبيت ⬇️ في شريط العنوان'
+        },
+        'windows': {
+          name: 'Windows',
+          steps: 'استخدم Chrome أو Edge واضغط على أيقونة التثبيت ⬇️ في شريط العنوان'
+        },
+        'other': {
+          name: 'جهازك',
+          steps: 'استخدم Chrome أو Edge واضغط على أيقونة التثبيت في شريط العنوان'
+        }
+      };
+      return instructions[platform];
+    },
 
-      const instructions = this.getPlatformInstructions();
+    // إنشاء نافذة موحدة
+    createModal({ icon, title, subtitle, buttons, extraContent = '' }) {
+      this.removeAllModals();
+      
+      const overlay = document.createElement('div');
+      overlay.className = 'modal-overlay';
+      overlay.id = 'pwaModal';
+      
+      const buttonsHTML = buttons.map((btn, i) => {
+        const btnClass = i === 0 ? 'modal-primary-btn' : 'modal-secondary-btn';
+        return `<button class="${btnClass}" id="${btn.id}">${btn.text}</button>`;
+      }).join('');
 
       overlay.innerHTML = `
-        <div class="pwa-install-modal">
-          <div class="pwa-app-icon"></div>
-          <h3 class="pwa-modal-title">تثبيت DrDer Puzzle 1</h3>
-          ${hasPrompt ? 
-            '<p class="pwa-modal-desc">ثبّت التطبيق على جهازك لتجربة أسرع والوصول دون اتصال بالإنترنت</p>' :
-            `<div class="pwa-modal-desc manual">
-              <div class="platform-name">📱 ${instructions.platform}:</div>
-              <div>${instructions.steps}</div>
-            </div>`
-          }
-          <div class="pwa-modal-actions">
-            ${hasPrompt ? '<button class="pwa-install-btn" id="pwaInstallBtn">📲 تثبيت التطبيق</button>' : ''}
-            <button class="pwa-later-btn" id="pwaLaterBtn">لاحقاً</button>
-          </div>
+        <div class="modal-dialog">
+          ${icon ? `<div class="modal-icon">${icon}</div>` : ''}
+          ${title ? `<h3 class="modal-title">${title}</h3>` : ''}
+          ${subtitle ? `<p class="modal-subtitle">${subtitle}</p>` : ''}
+          ${extraContent}
+          <div class="modal-actions">${buttonsHTML}</div>
         </div>
       `;
 
       document.body.appendChild(overlay);
 
-      if (hasPrompt) {
-        document.getElementById('pwaInstallBtn').addEventListener('click', () => this.installApp());
-      }
+      buttons.forEach(btn => {
+        const el = document.getElementById(btn.id);
+        if (el && btn.onClick) {
+          el.addEventListener('click', () => {
+            btn.onClick();
+            this.removeAllModals();
+          });
+        }
+      });
 
-      document.getElementById('pwaLaterBtn').addEventListener('click', () => this.removeModal());
-
-      this.autoCloseTimer = setTimeout(() => this.removeModal(), 45000);
+      // إغلاق تلقائي بعد 60 ثانية
+      setTimeout(() => this.removeAllModals(), 60000);
     },
 
-    async installApp() {
-      if (!this.deferredPrompt) return;
-      try {
-        this.deferredPrompt.prompt();
-        await this.deferredPrompt.userChoice;
+    removeAllModals() {
+      const modals = document.querySelectorAll('.modal-overlay, .victory-overlay');
+      modals.forEach(m => m.remove());
+    },
+
+    // نافذة التثبيت مع زر مباشر
+    showInstallPrompt() {
+      if (this.isStandalone) return;
+      
+      this.createModal({
+        icon: '📲',
+        title: 'تثبيت DrDer Puzzle 1',
+        subtitle: 'ثبّت التطبيق لتجربة أسرع والوصول دون اتصال بالإنترنت',
+        buttons: [
+          {
+            id: 'installNowBtn',
+            text: '📲 تثبيت التطبيق',
+            onClick: () => this.triggerInstall()
+          },
+          {
+            id: 'installLaterBtn',
+            text: 'لاحقاً'
+          }
+        ]
+      });
+    },
+
+    // نافذة التعليمات اليدوية
+    showManualInstructions() {
+      const platform = this.getPlatformInstructions();
+      
+      this.createModal({
+        icon: '📱',
+        title: 'تثبيت التطبيق',
+        subtitle: `اتبع الخطوات التالية لجهازك (${platform.name}):`,
+        extraContent: `
+          <div class="platform-instructions">
+            <div class="platform-name">${platform.name}:</div>
+            <div>${platform.steps}</div>
+          </div>
+        `,
+        buttons: [
+          {
+            id: 'manualCloseBtn',
+            text: 'حسناً'
+          }
+        ]
+      });
+    },
+
+    // تنفيذ التثبيت
+    async triggerInstall() {
+      if (this.deferredPrompt) {
+        try {
+          this.deferredPrompt.prompt();
+          const { outcome } = await this.deferredPrompt.userChoice;
+          console.log(`📋 Install outcome: ${outcome}`);
+          this.deferredPrompt = null;
+          this.hasPrompt = false;
+          this.updatePermanentButton();
+        } catch (err) {
+          console.warn('Install failed:', err);
+          this.showManualInstructions();
+        }
+      } else {
+        this.showManualInstructions();
+      }
+    },
+
+    // زر التثبيت الدائم
+    updatePermanentButton() {
+      const btn = document.getElementById('permanentInstallBtn');
+      if (!btn) return;
+      
+      if (this.isStandalone) {
+        btn.style.display = 'none';
+      } else if (this.deferredPrompt) {
+        btn.style.display = 'block';
+        btn.textContent = '📲 تثبيت التطبيق';
+      } else {
+        btn.style.display = 'block';
+        btn.textContent = '📱 كيفية التثبيت';
+      }
+    },
+
+    // التحقق من التحديثات
+    checkForUpdates() {
+      if (!this.swRegistration) return;
+      
+      this.swRegistration.addEventListener('updatefound', () => {
+        const newWorker = this.swRegistration.installing;
+        
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            this.showUpdateBanner();
+          }
+        });
+      });
+    },
+
+    // نافذة التحديث
+    showUpdateBanner() {
+      const banner = document.createElement('div');
+      banner.className = 'update-banner';
+      banner.id = 'updateBanner';
+      banner.innerHTML = `
+        <span>🔄 يتوفر إصدار جديد!</span>
+        <button class="update-btn" id="updateNowBtn">تحديث الآن</button>
+        <button class="modal-secondary-btn" id="updateLaterBtn" style="padding:0.5rem 1rem;font-size:0.9rem;">لاحقاً</button>
+      `;
+      document.body.appendChild(banner);
+
+      document.getElementById('updateNowBtn').addEventListener('click', () => {
+        if (navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage('skipWaiting');
+        }
+        window.location.reload();
+      });
+
+      document.getElementById('updateLaterBtn').addEventListener('click', () => {
+        banner.remove();
+      });
+    },
+
+    // التهيئة
+    async init() {
+      this.isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+      console.log('📱 App mode:', this.isStandalone ? 'Standalone' : 'Browser');
+
+      // تسجيل Service Worker
+      if ('serviceWorker' in navigator) {
+        try {
+          this.swRegistration = await navigator.serviceWorker.register('./sw.js');
+          console.log('✅ SW registered:', this.swRegistration.scope);
+          this.checkForUpdates();
+        } catch (err) {
+          console.warn('❌ SW registration failed:', err);
+        }
+      }
+
+      // أحداث التثبيت
+      window.addEventListener('beforeinstallprompt', (e) => {
+        console.log('🎯 beforeinstallprompt received!');
+        e.preventDefault();
+        this.deferredPrompt = e;
+        this.hasPrompt = true;
+        this.promptReceived = true;
+        this.updatePermanentButton();
+      });
+
+      window.addEventListener('appinstalled', () => {
+        console.log('✅ App installed successfully!');
         this.deferredPrompt = null;
-      } catch (err) {
-        console.warn('Install prompt failed:', err);
-      }
-      this.removeModal();
-    },
+        this.hasPrompt = false;
+        this.isStandalone = true;
+        this.updatePermanentButton();
+        this.removeAllModals();
+      });
 
-    showInstallModal() {
-      if (this.isStandalone) return;
-      this.createModal(true);
-    },
+      // تحديث الزر الدائم
+      this.updatePermanentButton();
 
-    showManualModal() {
-      if (this.isStandalone) return;
-      this.createModal(false);
-    },
-
-    removeModal() {
-      if (this.autoCloseTimer) {
-        clearTimeout(this.autoCloseTimer);
-        this.autoCloseTimer = null;
-      }
-      const overlay = document.getElementById('pwaInstallOverlay');
-      if (overlay) overlay.remove();
+      // تشخيص بعد 3 ثواني
+      setTimeout(() => this.diagnostic(), 3000);
     }
   };
 
-  PWA.init();
-
+  // ==================== اللعبة ====================
   const screens = {
     main: document.getElementById('mainMenu'),
     game: document.getElementById('gameScreen'),
@@ -805,6 +830,7 @@
   const backToMenuBtn = document.getElementById('backToMenuBtn');
   const newGameBtn = document.getElementById('newGameBtn');
   const undoBtn = document.getElementById('undoBtn');
+  const permanentInstallBtn = document.getElementById('permanentInstallBtn');
   const puzzleBoard = document.getElementById('puzzleBoard');
   const timerDisplay = document.getElementById('timerDisplay');
   const movesDisplay = document.getElementById('movesDisplay');
@@ -932,9 +958,7 @@
     return true;
   }
 
-  function handleTileClick(index) {
-    if (tiles[index] !== 0) moveTile(index);
-  }
+  function handleTileClick(index) { if (tiles[index] !== 0) moveTile(index); }
 
   function undoMove() {
     if (!gameActive || !moveHistory.length) return;
@@ -961,75 +985,68 @@
   }
 
   function showVictoryModal() {
-    const levelName = `${gridSize}×${gridSize}`;
-    const timeStr = formatTime(timerSeconds);
-    const movesStr = moves.toString();
-
+    PWASystem.removeAllModals();
+    
     const overlay = document.createElement('div');
-    overlay.className = 'victory-overlay';
+    overlay.className = 'modal-overlay victory-overlay';
     overlay.id = 'victoryOverlay';
     overlay.innerHTML = `
-      <div class="victory-modal">
+      <div class="modal-dialog victory-modal">
         <div class="victory-icon">🏆</div>
         <h2 class="victory-title">تهانينا!</h2>
-        <p class="victory-subtitle">لقد قمت بحل اللغز بنجاح</p>
+        <p class="modal-subtitle">لقد قمت بحل اللغز بنجاح</p>
         <div class="victory-stats">
           <div class="victory-stat">
             <span class="victory-stat-icon">⏱️</span>
-            <span class="victory-stat-value">${timeStr}</span>
+            <span class="victory-stat-value">${formatTime(timerSeconds)}</span>
             <span class="victory-stat-label">الوقت</span>
           </div>
           <div class="victory-stat-divider"></div>
           <div class="victory-stat">
             <span class="victory-stat-icon">👆</span>
-            <span class="victory-stat-value">${movesStr}</span>
+            <span class="victory-stat-value">${moves}</span>
             <span class="victory-stat-label">حركة</span>
           </div>
           <div class="victory-stat-divider"></div>
           <div class="victory-stat">
             <span class="victory-stat-icon">🧩</span>
-            <span class="victory-stat-value">${levelName}</span>
+            <span class="victory-stat-value">${gridSize}×${gridSize}</span>
             <span class="victory-stat-label">المستوى</span>
           </div>
         </div>
-        <div class="victory-actions">
-          <button class="victory-next-btn" id="victoryNextBtn">▶ التالي</button>
-          <button class="victory-newgame-btn" id="victoryNewGameBtn">🔄 لعبة جديدة</button>
-          <button class="victory-home-btn" id="victoryHomeBtn">🏠 العودة إلى القائمة الرئيسية</button>
+        <div class="modal-actions">
+          <button class="modal-primary-btn" id="victoryNextBtn">▶ التالي</button>
+          <button class="modal-secondary-btn" id="victoryNewGameBtn">🔄 لعبة جديدة</button>
+          <button class="modal-secondary-btn" id="victoryHomeBtn">🏠 القائمة الرئيسية</button>
         </div>
       </div>
     `;
-
     document.body.appendChild(overlay);
 
     document.getElementById('victoryNextBtn').addEventListener('click', () => {
       overlay.remove();
-      if (gridSize < 7) {
-        startNewGame(gridSize + 1);
-        updateLevelButtonsUI(gridSize);
-      } else {
-        startNewGame(7);
-      }
+      startNewGame(gridSize < 7 ? gridSize + 1 : 7);
     });
-
     document.getElementById('victoryNewGameBtn').addEventListener('click', () => {
       overlay.remove();
       startNewGame(gridSize);
     });
-
     document.getElementById('victoryHomeBtn').addEventListener('click', () => {
       overlay.remove();
       stopTimer();
       gameActive = false;
       switchScreen('main');
     });
-  }
 
-  function updateLevelButtonsUI(size) {
-    levelButtons.forEach(b => {
-      b.classList.remove('active');
-      if (parseInt(b.dataset.size) === size) b.classList.add('active');
-    });
+    // عرض نافذة التثبيت بعد أول فوز
+    PWASystem.gamesPlayed++;
+    if (PWASystem.gamesPlayed === 1 && !PWASystem.isStandalone) {
+      setTimeout(() => {
+        if (PWASystem.deferredPrompt) {
+          PWASystem.showInstallPrompt();
+        }
+      }, 2000);
+    }
   }
 
   function handleWin() {
@@ -1043,9 +1060,7 @@
   }
 
   function startNewGame(size = gridSize) {
-    const existingVictory = document.getElementById('victoryOverlay');
-    if (existingVictory) existingVictory.remove();
-
+    PWASystem.removeAllModals();
     stopTimer();
     gridSize = size;
     tiles = generateSolvablePuzzle(size);
@@ -1109,40 +1124,57 @@
     scoresList.innerHTML = html || 'لا توجد نتائج بعد.';
   }
 
+  // ==================== الأحداث ====================
   startBtn.addEventListener('click', () => {
     const active = document.querySelector('.level-btn.active');
     startNewGame(active ? parseInt(active.dataset.size) : 4);
   });
+
   levelButtons.forEach(b => b.addEventListener('click', () => {
     levelButtons.forEach(x => x.classList.remove('active'));
     b.classList.add('active');
   }));
+
   resumeBtn.addEventListener('click', () => { if (!resumeGame()) alert('لا توجد لعبة محفوظة.'); });
   bestScoresBtn.addEventListener('click', () => { displayBestScores(); switchScreen('bestScores'); });
   settingsBtn.addEventListener('click', () => switchScreen('settings'));
   howToPlayBtn.addEventListener('click', () => switchScreen('howToPlay'));
   aboutBtn.addEventListener('click', () => switchScreen('about'));
+
   backToMenuBtn.addEventListener('click', () => {
-    const existingVictory = document.getElementById('victoryOverlay');
-    if (existingVictory) existingVictory.remove();
+    PWASystem.removeAllModals();
     stopTimer(); gameActive = false; switchScreen('main');
   });
+
   newGameBtn.addEventListener('click', () => startNewGame(gridSize));
   undoBtn.addEventListener('click', undoMove);
+
+  // زر التثبيت الدائم
+  permanentInstallBtn.addEventListener('click', () => {
+    if (PWASystem.deferredPrompt) {
+      PWASystem.showInstallPrompt();
+    } else {
+      PWASystem.showManualInstructions();
+    }
+  });
+
   timerToggle.addEventListener('click', function() {
     this.classList.toggle('active');
     timerEnabled = this.classList.contains('active');
     if (gameActive) { stopTimer(); if (timerEnabled) startTimer(); }
   });
+
   movesToggle.addEventListener('click', function() {
     this.classList.toggle('active');
     movesCounterEnabled = this.classList.contains('active');
     updateMovesDisplay();
   });
+
   deleteScoresBtn.addEventListener('click', () => {
     [3,4,5,6,7].forEach(s => localStorage.removeItem(`drder_best_${s}`));
     alert('تم حذف أفضل النتائج.');
   });
+
   document.getElementById('backFromSettingsBtn').addEventListener('click', () => switchScreen('main'));
   document.getElementById('backFromScoresBtn').addEventListener('click', () => switchScreen('main'));
   document.getElementById('backFromHowToPlayBtn').addEventListener('click', () => switchScreen('main'));
@@ -1165,7 +1197,9 @@
     }
   });
 
+  // بدء كل شيء
   updateResumeButtonVisibility();
+  PWASystem.init();
 })();
 </script>
 </body>
