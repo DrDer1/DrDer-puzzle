@@ -658,7 +658,6 @@
 
 <script>
 (function() {
-  // ===================== Service Worker =====================
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js')
@@ -667,7 +666,6 @@
     });
   }
 
-  // ===================== نظام التثبيت PWA =====================
   const PWA = {
     deferredPrompt: null,
     isStandalone: false,
@@ -788,7 +786,6 @@
 
   PWA.init();
 
-  // ===================== عناصر DOM =====================
   const screens = {
     main: document.getElementById('mainMenu'),
     game: document.getElementById('gameScreen'),
@@ -817,7 +814,6 @@
   const deleteScoresBtn = document.getElementById('deleteScoresBtn');
   const scoresList = document.getElementById('scoresList');
 
-  // ===================== حالة اللعبة =====================
   let currentScreen = 'main';
   let gridSize = 4;
   let tiles = [];
@@ -830,7 +826,6 @@
   let movesCounterEnabled = true;
   let moveHistory = [];
 
-  // ===================== دوال الشاشات =====================
   function switchScreen(screenId) {
     Object.values(screens).forEach(s => s.classList.add('hidden'));
     screens[screenId].classList.remove('hidden');
@@ -838,7 +833,6 @@
     if (screenId === 'main') updateResumeButtonVisibility();
   }
 
-  // ===================== دوال الوقت والعداد =====================
   function formatTime(sec) {
     const m = Math.floor(sec / 60).toString().padStart(2, '0');
     const s = (sec % 60).toString().padStart(2, '0');
@@ -863,7 +857,6 @@
     movesDisplay.textContent = movesCounterEnabled ? moves : '--';
   }
 
-  // ===================== خوارزمية اللغز =====================
   function countInversions(arr) {
     let inv = 0;
     for (let i = 0; i < arr.length; i++)
@@ -896,7 +889,6 @@
     return arr;
   }
 
-  // ===================== عرض اللوحة =====================
   function renderBoard() {
     puzzleBoard.innerHTML = '';
     puzzleBoard.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
@@ -912,7 +904,6 @@
     });
   }
 
-  // ===================== الحركة والتراجع =====================
   function getAdjacentIndices(index) {
     const size = gridSize;
     const row = Math.floor(index / size), col = index % size;
@@ -969,7 +960,6 @@
     return tiles[gridSize * gridSize - 1] === 0;
   }
 
-  // ===================== نافذة الفوز =====================
   function showVictoryModal() {
     const levelName = `${gridSize}×${gridSize}`;
     const timeStr = formatTime(timerSeconds);
@@ -1052,9 +1042,7 @@
     setTimeout(() => showVictoryModal(), 300);
   }
 
-  // ===================== إدارة اللعبة =====================
   function startNewGame(size = gridSize) {
-    // إزالة أي نافذة فوز موجودة
     const existingVictory = document.getElementById('victoryOverlay');
     if (existingVictory) existingVictory.remove();
 
@@ -1102,7 +1090,6 @@
     resumeBtn.style.display = localStorage.getItem('drder_puzzle_save') ? 'block' : 'none';
   }
 
-  // ===================== أفضل النتائج =====================
   function saveBestScore() {
     const key = `drder_best_${gridSize}`;
     const prev = JSON.parse(localStorage.getItem(key)) || { moves: Infinity, time: Infinity, wins: 0 };
@@ -1122,7 +1109,6 @@
     scoresList.innerHTML = html || 'لا توجد نتائج بعد.';
   }
 
-  // ===================== الأحداث =====================
   startBtn.addEventListener('click', () => {
     const active = document.querySelector('.level-btn.active');
     startNewGame(active ? parseInt(active.dataset.size) : 4);
@@ -1162,7 +1148,6 @@
   document.getElementById('backFromHowToPlayBtn').addEventListener('click', () => switchScreen('main'));
   document.getElementById('backFromAboutBtn').addEventListener('click', () => switchScreen('main'));
 
-  // دعم لوحة المفاتيح
   window.addEventListener('keydown', (e) => {
     if (currentScreen !== 'game' || !gameActive) return;
     if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undoMove(); return; }
