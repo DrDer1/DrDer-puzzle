@@ -4,6 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>DrDer 15 Puzzle</title>
+  
+  <!-- Manifest لتطبيق الويب -->
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22DrDer%2015%20Puzzle%22%2C%22short_name%22%3A%22DrDer%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f0a1e%22%2C%22theme_color%22%3A%22%237c3aed%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%253Crect%20width%3D'100'%20height%3D'100'%20rx%3D'20'%20fill%3D'%237c3aed'%2F%3E%253Ctext%20x%3D'50'%20y%3D'65'%20font-size%3D'50'%20text-anchor%3D'middle'%20fill%3D'white'%3E%F0%9F%A7%A9%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22100x100%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+  <meta name="theme-color" content="#7c3aed">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="DrDer Puzzle">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%237c3aed'/%3E%3Ctext x='50' y='65' font-size='50' text-anchor='middle' fill='white'%3E🧩%3C/text%3E%3C/svg%3E">
+
   <style>
     * {
       margin: 0;
@@ -16,6 +25,7 @@
       background: #0f0a1e;
       color: #ffffff;
       min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -180,30 +190,6 @@
       justify-content: center;
     }
 
-    .popup-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(10, 5, 20, 0.85);
-      backdrop-filter: blur(5px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-    }
-
-    .popup {
-      background: #1a1033;
-      padding: 2rem;
-      border-radius: 2rem;
-      text-align: center;
-      max-width: 280px;
-      width: 90%;
-      box-shadow: 0 15px 30px black;
-    }
-
     .settings-row {
       display: flex;
       justify-content: space-between;
@@ -246,9 +232,51 @@
       margin: 0.5rem 0;
     }
 
-    .small-text {
+    /* رسالة تثبيت التطبيق */
+    .install-banner {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a1033;
+      border: 2px solid #7c3aed;
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      z-index: 200;
+      box-shadow: 0 10px 30px rgba(124, 58, 237, 0.4);
+      animation: slideUp 0.5s ease, fadeOut 0.5s ease 9.5s forwards;
+      max-width: 90%;
+      direction: rtl;
+    }
+
+    .install-banner button {
+      padding: 0.5rem 1.2rem;
       font-size: 0.9rem;
+      white-space: nowrap;
+      box-shadow: 0 4px 0 #4c1d95;
+    }
+
+    .install-banner .close-banner {
+      background: transparent;
+      border: none;
       color: #c4b5fd;
+      font-size: 1.3rem;
+      cursor: pointer;
+      padding: 0 0.3rem;
+      box-shadow: none;
+    }
+
+    @keyframes slideUp {
+      from { bottom: -100px; opacity: 0; }
+      to { bottom: 20px; opacity: 1; }
+    }
+
+    @keyframes fadeOut {
+      to { opacity: 0; visibility: hidden; }
     }
 
     @media (max-width: 400px) {
@@ -344,6 +372,12 @@
 
 <script>
   (function() {
+    // ---------- Service Worker للتطبيق ----------
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('data:application/javascript,self.addEventListener("fetch",e=>{})')
+        .catch(() => {});
+    }
+
     // ---------- عناصر DOM ----------
     const screens = {
       main: document.getElementById('mainMenu'),
@@ -381,9 +415,68 @@
     let timerSeconds = 0;
     let timerInterval = null;
     let gameActive = false;
-
     let timerEnabled = true;
     let movesCounterEnabled = true;
+
+    // ---------- رسالة تثبيت التطبيق ----------
+    let deferredPrompt = null;
+    let installBanner = null;
+
+    function showInstallBanner() {
+      if (installBanner) return;
+      if (localStorage.getItem('drder_install_dismissed')) return;
+      
+      installBanner = document.createElement('div');
+      installBanner.className = 'install-banner';
+      installBanner.innerHTML = `
+        <span>📲 تثبيت التطبيق على جهازك</span>
+        <button id="installBtn">تثبيت</button>
+        <button class="close-banner" id="closeBannerBtn">✕</button>
+      `;
+      document.body.appendChild(installBanner);
+
+      document.getElementById('installBtn').addEventListener('click', async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          deferredPrompt = null;
+        }
+        removeInstallBanner();
+      });
+
+      document.getElementById('closeBannerBtn').addEventListener('click', () => {
+        localStorage.setItem('drder_install_dismissed', '1');
+        removeInstallBanner();
+      });
+
+      // إخفاء تلقائي بعد 10 ثواني
+      setTimeout(() => {
+        removeInstallBanner();
+      }, 10000);
+    }
+
+    function removeInstallBanner() {
+      if (installBanner) {
+        installBanner.remove();
+        installBanner = null;
+      }
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      showInstallBanner();
+    });
+
+    window.addEventListener('appinstalled', () => {
+      deferredPrompt = null;
+      removeInstallBanner();
+    });
+
+    // إذا كان التطبيق مثبتاً بالفعل لا تظهر الرسالة
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      localStorage.setItem('drder_install_dismissed', '1');
+    }
 
     // ---------- دوال مساعدة ----------
     function switchScreen(screenId) {
@@ -698,6 +791,13 @@
 
     // التحميل الأولي
     updateResumeButtonVisibility();
+
+    // عرض رسالة التثبيت بعد تحميل الصفحة
+    window.addEventListener('load', () => {
+      if (deferredPrompt) {
+        showInstallBanner();
+      }
+    });
   })();
 </script>
 </body>
