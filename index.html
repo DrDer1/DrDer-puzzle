@@ -10,7 +10,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="DrDer Puzzle 1">
-  <meta name="description" content="لعبة ألغاز منزلقة كلاسيكية بتصميم عصري - DrDer Puzzle 1">
+  <meta name="description" content="لعبة ألغاز منزلقة كلاسيكية بتصميم عصري">
   <link rel="apple-touch-icon" href="./icons/icon-192.png">
   <link rel="icon" sizes="192x192" href="./icons/icon-192.png">
   <link rel="icon" sizes="512x512" href="./icons/icon-512.png">
@@ -19,7 +19,6 @@
 </head>
 <body>
   <div class="game-container" id="app">
-    <!-- القائمة الرئيسية -->
     <div id="mainMenu" class="screen">
       <div class="header">
         <span class="logo">🧩</span>
@@ -43,7 +42,6 @@
       </div>
     </div>
 
-    <!-- شاشة اللعب -->
     <div id="gameScreen" class="screen hidden">
       <div class="header" style="justify-content: space-between;">
         <button id="backToMenuBtn" class="secondary btn-sm">↩ رجوع</button>
@@ -61,7 +59,6 @@
       </div>
     </div>
 
-    <!-- الإعدادات -->
     <div id="settingsScreen" class="screen hidden">
       <h2>الإعدادات</h2>
       <div class="settings-row">
@@ -76,14 +73,12 @@
       <button id="backFromSettingsBtn" class="mt-05">رجوع</button>
     </div>
 
-    <!-- أفضل النتائج -->
     <div id="bestScoresScreen" class="screen hidden">
       <h2>أفضل النتائج</h2>
       <div id="scoresList" class="scores-container">لا توجد نتائج بعد.</div>
       <button id="backFromScoresBtn">رجوع</button>
     </div>
 
-    <!-- طريقة اللعب -->
     <div id="howToPlayScreen" class="screen hidden">
       <h2>طريقة اللعب</h2>
       <p>حرك البلاطات المجاورة للمساحة الفارغة لإعادة ترتيب الأرقام تصاعدياً.</p>
@@ -93,7 +88,6 @@
       <button id="backFromHowToPlayBtn">رجوع</button>
     </div>
 
-    <!-- حول اللعبة -->
     <div id="aboutScreen" class="screen hidden">
       <h2>DrDer Puzzle 1</h2>
       <p>الإصدار 1.0</p>
