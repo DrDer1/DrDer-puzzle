@@ -3,15 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>DrDer 15 Puzzle</title>
+  <title>DrDer Puzzle (1)</title>
   
   <!-- Manifest لتطبيق الويب -->
-  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22DrDer%2015%20Puzzle%22%2C%22short_name%22%3A%22DrDer%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f0a1e%22%2C%22theme_color%22%3A%22%237c3aed%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%253Crect%20width%3D'100'%20height%3D'100'%20rx%3D'20'%20fill%3D'%237c3aed'%2F%3E%253Ctext%20x%3D'50'%20y%3D'65'%20font-size%3D'50'%20text-anchor%3D'middle'%20fill%3D'white'%3E%F0%9F%A7%A9%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22100x100%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22DrDer%20Puzzle%20(1)%22%2C%22short_name%22%3A%22DrDer%20(1)%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f0a1e%22%2C%22theme_color%22%3A%22%237c3aed%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fi.ibb.co%2FYTXbwNT2%2F192-1.png%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%2C%7B%22src%22%3A%22https%3A%2F%2Fi.ibb.co%2FwhGd4Z8p%2F512-1.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
   <meta name="theme-color" content="#7c3aed">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="DrDer Puzzle">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%237c3aed'/%3E%3Ctext x='50' y='65' font-size='50' text-anchor='middle' fill='white'%3E🧩%3C/text%3E%3C/svg%3E">
+  <meta name="apple-mobile-web-app-title" content="DrDer Puzzle (1)">
+  <link rel="apple-touch-icon" href="https://i.ibb.co/YTXbwNT2/192-1.png">
+  <link rel="icon" sizes="192x192" href="https://i.ibb.co/YTXbwNT2/192-1.png">
+  <link rel="icon" sizes="512x512" href="https://i.ibb.co/whGd4Z8p/512-1.png">
 
   <style>
     * {
@@ -232,7 +234,6 @@
       margin: 0.5rem 0;
     }
 
-    /* رسالة تثبيت التطبيق */
     .install-banner {
       position: fixed;
       bottom: 20px;
@@ -292,7 +293,7 @@
   <div id="mainMenu" class="screen">
     <div class="header">
       <span class="logo">🧩</span>
-      <span class="title">DrDer 15 Puzzle</span>
+      <span class="title">DrDer Puzzle (1)</span>
     </div>
     <div class="menu-grid">
       <button id="resumeGameBtn" class="secondary" style="display: none;">▶ استكمال آخر لعبة</button>
@@ -362,7 +363,7 @@
 
   <!-- حول اللعبة -->
   <div id="aboutScreen" class="screen hidden">
-    <h2>DrDer 15 Puzzle</h2>
+    <h2>DrDer Puzzle (1)</h2>
     <p>الإصدار 1.0</p>
     <p>© DrDer</p>
     <p>لعبة ألغاز منزلقة كلاسيكية بتصميم عصري.</p>
@@ -449,7 +450,6 @@
         removeInstallBanner();
       });
 
-      // إخفاء تلقائي بعد 10 ثواني
       setTimeout(() => {
         removeInstallBanner();
       }, 10000);
@@ -473,7 +473,6 @@
       removeInstallBanner();
     });
 
-    // إذا كان التطبيق مثبتاً بالفعل لا تظهر الرسالة
     if (window.matchMedia('(display-mode: standalone)').matches) {
       localStorage.setItem('drder_install_dismissed', '1');
     }
@@ -792,7 +791,6 @@
     // التحميل الأولي
     updateResumeButtonVisibility();
 
-    // عرض رسالة التثبيت بعد تحميل الصفحة
     window.addEventListener('load', () => {
       if (deferredPrompt) {
         showInstallBanner();
